@@ -12,10 +12,9 @@
   body, html {
     margin: 0;
     padding: 0;
-    /* Background pixel retro seperti Mario Bros: langit biru solid */
-    background: #00000000; /* Solid blue sky like Mario */
+    background: #00000000;
     font-family: 'Baloo 2', cursive;
-    overflow: hidden; /* Pastikan tidak ada scroll */
+    overflow: hidden; 
     height: 100vh;
     user-select: none;
     color: #3d4a4a;
@@ -39,16 +38,12 @@
   z-index: 1;
 }
 
-
-  /* --- Image-based Character Design --- */
   #pou {
   z-index: 1000;
   position: absolute;
   bottom: 85px;
   left: 50%;
   transform: translateX(-50%);
-
-  /* Ukuran ini yang bikin gambar muncul */
   width: 90px;
   height: 110px;
 
@@ -77,25 +72,21 @@
     line-height: 30px;
     cursor: default;
     pointer-events: none;
-    /* Hapus background-color dan box-shadow dari sini */
-    transition: text-shadow 0.3s ease-in-out; /* Transisi untuk text-shadow */
-    border-radius: 50%; /* Tetap lingkaran untuk area sentuh/jatuh */
-    background-color: transparent; /* Pastikan latar belakang transparan */
+    transition: text-shadow 0.3s ease-in-out; 
+    border-radius: 50%; 
+    background-color: transparent;
   }
 
-  /* Makanan Sehat: Emoji Emas Soft Menyala */
   .apple, .banana, .carrot, .broccoli, .grape, .strawberry, .cucumber, .fish {
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.6); /* Efek menyala emas pada teks */
-    animation: pulse-text-gold 1.5s infinite alternate; /* Animasi menyala pada teks */
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.6);
+    animation: pulse-text-gold 1.5s infinite alternate; 
   }
 
-  /* Makanan Tidak Sehat: Emoji Merah Soft Menyala */
   .cookie, .pizza, .donut, .burger, .fries, .soda, .hotdog, .icecream {
-    text-shadow: 0 0 5px rgba(255, 99, 71, 0.8), 0 0 10px rgba(255, 99, 71, 0.6); /* Efek menyala merah pada teks */
-    animation: pulse-text-red 1.5s infinite alternate; /* Animasi menyala pada teks */
+    text-shadow: 0 0 5px rgba(255, 99, 71, 0.8), 0 0 10px rgba(255, 99, 71, 0.6);
+    animation: pulse-text-red 1.5s infinite alternate;
   }
 
-  /* Keyframes untuk efek menyala emas pada teks */
   @keyframes pulse-text-gold {
     0% {
       text-shadow: 0 0 5px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.6);
@@ -104,8 +95,7 @@
       text-shadow: 0 0 8px rgba(255, 215, 0, 1), 0 0 15px rgba(255, 215, 0, 0.8);
     }
   }
-
-  /* Keyframes untuk efek menyala merah pada teks */
+  
   @keyframes pulse-text-red {
     0% {
       text-shadow: 0 0 5px rgba(255, 99, 71, 0.8), 0 0 10px rgba(255, 99, 71, 0.6);
@@ -115,109 +105,107 @@
     }
   }
 
-  /* Hapus semua bentuk spesifik makanan agar semua menjadi lingkaran */
-  /* .apple { } */
-  /* .banana { border-radius: 30% 70% 60% 40% / 100% 100% 20% 20%; } */
-  /* .carrot { border-radius: 10% 90% 10% 90% / 50% 50% 50% 50%; } */
-  /* .broccoli { border-radius: 50%; } */
-  /* .cookie { border-radius: 50%; } */
-  /* .pizza { clip-path: polygon(50% 0%, 100% 100%, 0% 100%); font-size: 20px; line-height: 28px; } */
-  /* .donut { position: relative; border-radius: 50%; } */
-  /* .donut::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; border-radius: 50%; background-color: inherit; } */
-  /* .burger { border-radius: 50% 50% 10% 10% / 50% 50% 5% 5%; } */
-  /* .grape { border-radius: 50%; } */
-  /* .strawberry { border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; } */
-  /* .cucumber { border-radius: 20%; } */
-  /* .fish { clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%); } */
-  /* .fries { border-radius: 5px; } */
-  /* .soda { border-radius: 10% / 50%; } */
-  /* .hotdog { border-radius: 50%; } */
-  /* .icecream { clip-path: polygon(0% 0%, 100% 0%, 75% 100%, 25% 100%); } */
-
-
- /* Scoreboard - Diubah menjadi Horizontal di Tengah Atas */
   #imtPanel {
   position: fixed;
-  top: 20px; /* Sedikit lebih turun agar tidak terlalu mepet */
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0;
+  left: 0;
+  width: 100%; /* Menjamin menutupi seluruh lebar dari ujung ke ujung */
   z-index: 1010;
-  min-width: 280px; /* Sedikit lebih lebar */
+  background: rgba(255, 255, 255, 0.98);
+  /* Hanya garis bawah sebagai pembatas visual */
+  border-bottom: 3px solid #2e7d32;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  text-align: center;
-  font-family: 'Baloo 2', cursive; /* Pastikan font Baloo digunakan */
-
-  /* --- Efek Visual Baru --- */
-  background: rgba(255, 255, 255, 0.98); /* Lebih putih & bersih */
-  border-radius: 20px; /* Sudut lebih tumpul */
-  /* Border tebal bergaya kartun */
-  border: 4px solid #2e7d32; /* Hijau tua */
-  /* Efek bayangan 3D kartun */
-  box-shadow: 
-    0 8px 0 rgba(0, 0, 0, 0.1), /* Bayangan bawah padat */
-    0 10px 20px rgba(0, 0, 0, 0.2); /* Bayangan soft luar */
-  transition: all 0.3s ease; /* Transisi halus saat ada perubahan */
+  font-family: 'Baloo 2', cursive;
+  pointer-events: none; /* Karakter tetap bisa gerak meski di bawah bar */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-/* Hover Effect - Sedikit terangkat saat mouse di atasnya */
-#imtPanel:hover {
-  transform: translateX(-50%) translateY(-3px);
-  box-shadow: 
-    0 11px 0 rgba(0, 0, 0, 0.1),
-    0 15px 25px rgba(0, 0, 0, 0.25);
-}
-
-/* Gaya Baris Atas - Informasi Kategori */
 .panel-row-top {
-  background: #e8f5e9; /* Hijau pudar */
-  padding: 8px 15px; /* Lebih luas */
-  border-bottom: 2px solid #a9d7c8; /* Garis pemisah soft */
+  background: #f1f8e9;
+  /* Padding sangat ramping */
+  padding: 4px 10px 2px 10px; 
+  border-bottom: 1px solid #c8e6c9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .label-kategori {
-  font-size: 11px; /* Sedikit lebih besar agar terbaca */
+  font-size: 8px; /* Ukuran teks label diperkecil lagi */
   font-weight: 800;
-  color: #555;
-  letter-spacing: 1.2px;
-  margin-bottom: 2px;
+  color: #666;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Teks Status Besar (Normal/Kurus/dkk) */
 #imtStatus {
-  font-size: 24px; /* Lebih besar & mencolok */
-  font-weight: 900; /* Paling tebal */
-  text-transform: uppercase;
-  margin: 0;
-  padding: 0;
-  /* Warna Default (Hijau Normal) */
-  color: #2e7d32; 
-  /* Beri sedikit glow teks halus */
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+  font-size: 15px; /* Lebih kecil agar hemat ruang */
+  font-weight: 900;
+  margin: -3px 0 0 0; /* Merapatkan jarak ke atas */
 }
 
-/* Gaya Baris Bawah - Skor & Waktu */
 .panel-row-bottom {
   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 12px 15px; /* Lebih luas */
+  justify-content: center;
+  gap: 25px; /* Jarak antar info diperapat */
+  padding: 3px 10px; /* Padding minimalis */
   background: white;
+  width: 100%;
 }
 
-/* Item Informasi individual (Kalori / Waktu) */
 .info-item {
   display: flex;
   align-items: center;
-  gap: 8px; /* Jarak ikon-teks lebih pas */
+  gap: 4px;
   font-weight: 800;
-  font-size: 18px; /* Sedikit lebih besar */
-  color: #333;
+  font-size: 12px; /* Ukuran skor dan timer lebih kecil */
 }
 
-/* --- Animasi --- */
+.imt-legend {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  font-size: 8px; /* Ukuran teks sangat kecil agar hemat ruang */
+  color: #666;
+  margin-bottom: 2px;
+  background: rgba(255,255,255,0.5);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
 
-/* 1. Animasi Detak Jantung untuk Emoji */
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+/* Titik warna indikator */
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot.thin { background: #fbc02d; }
+.dot.normal { background: #2e7d32; }
+.dot.over { background: #ef6c00; }
+
+/* Sesuaikan kembali imtStatus agar tidak menabrak legend */
+#imtStatus {
+  font-size: 14px;
+  font-weight: 900;
+  margin: 0;
+  line-height: 1.1;
+}
+.emoji-icon {
+  font-size: 12px;
+  animation: mini-pulse 2s infinite ease-in-out;
+}
+
 @keyframes emoji-pulse {
   0% { transform: scale(1); }
   15% { transform: scale(1.15); }
@@ -229,20 +217,16 @@
 
 .emoji {
   font-size: 20px;
-  display: inline-block; /* Diperlukan agar animasi scale berfungsi */
+  display: inline-block; 
 }
 
-/* Terapkan animasi pulse hanya pada emoji Api */
 .info-item:first-child .emoji {
-  animation: emoji-pulse 2s infinite; /* Berdetak setiap 2 detik secara terus-menerus */
+  animation: emoji-pulse 2s infinite; 
 }
-
-/* 2. Warna Teks Khusus untuk Waktu */
 #gameTimer {
-  color: #c62828; /* Merah yang lebih dalam & bersih */
+  color: #c62828; 
 }
 
-/* --- Penyesuaian Responsif Mobile --- */
 @media screen and (max-width: 480px) {
   #imtPanel {
     min-width: 250px;
@@ -255,7 +239,7 @@
     font-size: 16px;
   }
 }
-  /* Game Over Overlay */
+  
   #gameOverOverlay {
     position: fixed;
     inset: 0;
@@ -289,7 +273,6 @@
   #gameOverOverlay button:hover {
     background: #d32f2f;
   }
-  /* Styles for best score/time in game over overlay */
   #gameOverDetails {
     margin-top: 20px;
     font-size: 18px;
@@ -300,17 +283,14 @@
     display: block;
     margin-top: 5px;
   }
-  /* Style for Main Menu button */
   #mainMenuBtn {
-    background: #2196F3; /* Warna biru */
+    background: #2196F3;
     box-shadow: 0 6px 12px rgba(33, 150, 243, 0.6);
-    margin-top: 15px; /* Sedikit jarak dari tombol restart */
+    margin-top: 15px;
   }
   #mainMenuBtn:hover {
     background: #1976D2;
   }
-
-
   /* Start Screen */
   .page {
     position: fixed;
@@ -335,7 +315,7 @@
     background: #99DEFB;
   }
   #startScreen {
-    display: none; /* Hide the old startScreen */
+    display: none; 
   }
   #startScreen h1 {
     font-size: 2rem;
@@ -349,19 +329,19 @@
     color: #3a5d40;
     max-width: 280px;
   }
-  #characterSelectionTitle, #difficultySelectionTitle { /* New style for the title */
+  #characterSelectionTitle, #difficultySelectionTitle {
     font-size: 1.2rem;
     margin-bottom: 10px;
     color: #3a5d40;
     font-weight: 600;
   }
-  #characterSelection, .difficulty-option { /* Removed #difficultySelection */
+  #characterSelection, .difficulty-option { 
     margin-bottom: 20px;
     display: flex;
     gap: 20px;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap; /* Agar opsi bisa wrap di layar kecil */
+    flex-wrap: wrap; 
   }
   .character-container {
     display: flex;
@@ -392,7 +372,7 @@
     overflow: hidden;
   }
   .difficulty-option {
-    font-size: 1em; /* Ukuran teks normal */
+    font-size: 1em; 
   }
   .character-option.selected, .difficulty-option.selected {
     box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
@@ -428,27 +408,20 @@
 
   /* Info Button on Start Screen */
   #infoButton, #nextToPage2 {
-    /* position: absolute; */
-    /* top: 15px; */
-    /* right: 15px; */
-    /* Menyesuaikan ukuran dan padding untuk teks "Panduan Game" */
-    /* width: 40px; */ /* Dihapus */
-    /* height: 40px; */ /* Dihapus */
-    border-radius: 8px; /* Mengubah dari lingkaran ke persegi panjang dengan sudut membulat */
+    border-radius: 8px;
     background: rgba(255, 255, 255, 0);
     border: 2px solid #2e7d3200;
     color: #2e7d3200;
-    font-size: 0.9em; /* Mengurangi ukuran font agar teks muat */
+    font-size: 0.9em;
     font-weight: 700;
-    padding: 8px 12px; /* Menambahkan padding */
+    padding: 8px 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0);
     transition: all 0.2s ease;
-    /* z-index: 2001; */ /* Di atas startScreen */
-    white-space: nowrap; /* Mencegah teks pecah baris */
+    white-space: nowrap;
   }
   #infoButton:hover {
     background: #e0ffe000;
@@ -460,10 +433,10 @@
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.7);
-    display: none; /* Hidden by default */
+    display: none;
     align-items: center;
     justify-content: center;
-    z-index: 3000; /* Di atas semua elemen lain */
+    z-index: 3000;
     padding: 20px;
   }
   #infoContent {
@@ -475,8 +448,8 @@
     box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     text-align: left;
     position: relative;
-    max-height: 90vh; /* Batasi tinggi agar bisa di-scroll jika konten banyak */
-    overflow-y: auto; /* Aktifkan scroll jika konten melebihi tinggi */
+    max-height: 90vh;
+    overflow-y: auto;
   }
   #infoContent h2 {
     color: #2e7d32;
@@ -522,43 +495,11 @@
 
 @media screen and (max-width: 768px) {
   #pou {
-    width: 70px; /* Slightly larger for mobile */
+    width: 70px;
     height: 100px;
     bottom: 60px;
   }
-  #pou::before {
-    width: 4px; /* Ukuran 1 piksel untuk mobile */
-    height: 4px;
-    box-shadow:
-      /* --- Rambut (Desain Baru Mobile) --- */
-      12px 0 #333, 16px 0 #333, 20px 0 #333, 24px 0 #333, 28px 0 #333, 32px 0 #333, 36px 0 #333, 40px 0 #333, 44px 0 #333, 48px 0 #333,
-      8px 4px #333, 12px 4px #333, 16px 4px #333, 20px 4px #333, 24px 4px #333, 28px 4px #333, 32px 4px #333, 36px 4px #333, 40px 4px #333, 44px 4px #333, 48px 4px #333, 52px 4px #333,
-      4px 8px #333, 8px 8px #333, 12px 8px #333, 16px 8px #333, 20px 8px #333, 24px 8px #333, 28px 8px #333, 32px 8px #333, 36px 8px #333, 40px 8px #333, 44px 8px #333, 48px 8px #333, 52px 8px #333, 56px 8px #333,
-      4px 12px #333, 8px 12px #333, 12px 12px #333, 16px 12px #333, 20px 12px #333, 24px 12px #333, 28px 12px #333, 32px 12px #333, 36px 12px #333, 40px 12px #333, 44px 12px #333, 48px 12px #333, 52px 12px #333, 56px 12px #333,
-
-      /* --- Kepala (bagian kulit yang terlihat) --- */
-      12px 16px #f0c8a0, 16px 16px #f0c8a0, 20px 16px #f0c8a0, 24px 16px #f0c8a0, 28px 16px #f0c8a0, 32px 16px #f0c8a0, 36px 16px #f0c8a0, 40px 16px #f0c8a0, 44px 16px #f0c8a0, 48px 16px #f0c8a0,
-      12px 20px #f0c8a0, 16px 20px #f0c8a0, 20px 20px #f0c8a0, 24px 20px #f0c8a0, 28px 20px #f0c8a0, 32px 20px #f0c8a0, 36px 20px #f0c8a0, 40px 20px #f0c8a0, 44px 20px #f0c8a0, 48px 20px #f0c8a0,
-      12px 24px #f0c8a0, 16px 24px #f0c8a0, 20px 24px #f0c8a0, 24px 24px #f0c8a0, 28px 24px #f0c8a0, 32px 24px #f0c8a0, 36px 24px #f0c8a0, 40px 24px #f0c8a0, 44px 24px #f0c8a0, 48px 24px #f0c8a0,
-      16px 28px #f0c8a0, 20px 28px #f0c8a0, 24px 28px #f0c8a0, 28px 28px #f0c8a0, 32px 28px #f0c8a0, 36px 28px #f0c8a0, 40px 28px #f0c8a0, 44px 28px #f0c8a0,
-      20px 32px #f0c8a0, 24px 32px #f0c8a0, 28px 32px #f0c8a0, 32px 32px #f0c8a0, 36px 32px #f0c8a0, 40px 32px #f0c8a0,
-
-      /* --- Leher --- */
-      28px 36px #f0c8a0, 32px 36px #f0c8a0,
-
-      /* --- Tubuh (sekitar 12x12 piksel) --- */
-      /* Baris 1 (bahu) */
-      20px 40px #4a70a0, 24px 40px #4a70a0, 28px 40px #4a70a0, 32px 40px #4a70a0, 36px 40px #4a70a0, 40px 40px #4a70a0,
-      /* Baris 2-12 (badan) */
-      16px 44px #4a70a0, 20px 44px #4a70a0, 24px 44px #4a70a0, 28px 44px #4a70a0, 32px 44px #4a70a0, 36px 44px #4a70a0, 40px 44px #4a70a0, 44px 44px #4a70a0,
-      16px 48px #4a70a0, 20px 48px #4a70a0, 24px 48px #4a70a0, 28px 48px #4a70a0, 32px 48px #4a70a0, 36px 48px #4a70a0, 40px 48px #4a70a0, 44px 48px #4a70a0,
-      16px 52px #4a70a0, 20px 52px #4a70a0, 24px 52px #4a70a0, 28px 52px #4a70a0, 32px 52px #4a70a0, 36px 52px #4a70a0, 40px 52px #4a70a0, 44px 52px #4a70a0,
-      16px 56px #4a70a0, 20px 56px #4a70a0, 24px 56px #4a70a0, 28px 56px #4a70a0, 32px 56px #4a70a0, 36px 56px #4a70a0, 40px 56px #4a70a0, 44px 56px #4a70a0,
-      16px 60px #4a70a0, 20px 60px #4a70a0, 24px 60px #4a70a0, 28px 60px #4a70a0, 32px 60px #4a70a0, 36px 60px #4a70a0, 40px 60px #4a70a0, 44px 60px #4a70a0,
-      16px 64px #4a70a0, 20px 64px #4a70a0, 24px 64px #4a70a0, 28px 64px #4a70a0, 32px 64px #4a70a0, 36px 64px #4a70a0, 40px 64px #4a70a0, 44px 64px #4a70a0,
-      16px 68px #4a70a0, 20px 68px #4a70a0, 24px 68px #4a70a0, 28px 68px #4a70a0, 32px 68px #4a70a0, 36px 68px #4a70a0, 40px 68px #4a70a0, 44px 68px #4a70a0,
-      20px 72px #4a70a0, 24px 72px #4a70a0, 28px 72px #4a70a0, 32px 72px #4a70a0, 36px 72px #4a70a0, 40px 72px #4a70a0;
-  }
+  
   #pou::after {
     top: 20px; /* Posisi Y mata mobile */
     left: 24px; /* Posisi X mata kiri mobile */
@@ -694,9 +635,9 @@
       <li>Kalori: Angka kalori Anda akan ditampilkan di panel IMT. Tujuan Anda adalah menjaga kalori tetap seimbang dengan kebutuhan harian Anda.</li>
       <li>IMT (Indeks Masa Tubuh): IMT Nutrie akan berubah berdasarkan makanan yang dikonsumsi.
         <ul>
-          <li> Normal: 18.5 - 24.9</li>
-          <li> Overweight: 25 - 29.9</li>
-          <li> Obese: ≥ 30 (Game Over!)</li>
+          <li>**Normal:** 18.5 - 24.9</li>
+          <li>**Overweight:** 25 - 29.9</li>
+          <li>**Obese:** ≥ 30 (Game Over!)</li>
         </ul>
       </li>
       <li>Game berakhir jika IMT Nutrie mencapai atau melebihi 30 (Obesitas).</li>
@@ -747,10 +688,15 @@
   </div>
   
  <div id="imtPanel">
-  <div class="panel-row-top">
-    <div class="label-kategori">KATEGORI IMT : Kurus : < 17 | Normal: 18.5 - 24.9 | Overweight: 25 - 29.9 </div>
-    <div id="imtStatus">NORMAL</div>
+ <div class="panel-row-top">
+  <div class="label-kategori">KLASIFIKASI IMT</div>
+  <div class="imt-legend">
+    <div class="legend-item"><span class="dot thin"></span> < 18.5 Kurus</div>
+    <div class="legend-item"><span class="dot normal"></span> 18.5-24.9 Normal</div>
+    <div class="legend-item"><span class="dot over"></span> 25-29.9 Gemuk</div>
   </div>
+  <div id="imtStatus">NORMAL</div>
+</div>
 
   <div class="panel-row-bottom">
     <div class="info-item">
@@ -1370,4 +1316,3 @@ endGame = function() {
 </body>
 </html>
  
-
