@@ -44,12 +44,12 @@
   bottom: 85px;
   left: 50%;
   transform: translateX(-50%);
-  width: 90px;
+   width: clamp(60px, 12vw, 120px);
   height: 110px;
 
-  background-size: contain;
+  background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center bottom;
   background-color: transparent;
   background-image: url('Male.png');
 }
@@ -111,7 +111,9 @@
   left: 0;
   width: 100%; /* Menjamin menutupi seluruh lebar dari ujung ke ujung */
   z-index: 1010;
-  background: rgba(255, 255, 255, 0.98);
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+color: white;
+border-radius: 0 0 20px 20px;
   /* Hanya garis bawah sebagai pembatas visual */
   border-bottom: 3px solid #2e7d32;
   display: flex;
@@ -142,9 +144,10 @@
 }
 
 #imtStatus {
-  font-size: 15px; /* Lebih kecil agar hemat ruang */
+  font-size: 18px;
   font-weight: 900;
-  margin: -3px 0 0 0; /* Merapatkan jarak ke atas */
+  color: white;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
 .panel-row-bottom {
@@ -154,14 +157,16 @@
   padding: 3px 10px; /* Padding minimalis */
   background: white;
   width: 100%;
+  border-top: 1px solid #eee;
+margin-top: 5px;
 }
 
 .info-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 800;
-  font-size: 12px; /* Ukuran skor dan timer lebih kecil */
+   background: rgba(255,255,255,0.15);
+  padding: 8px 14px;
+  border-radius: 14px;
+  backdrop-filter: blur(5px);
+  color: white;/* Ukuran skor dan timer lebih kecil */
 }
 
 .imt-legend {
@@ -312,6 +317,8 @@
     background: #99DEFB;
   }
   #page2 {
+    justify-content: center;
+  align-items: center;
     background: #99DEFB;
   }
   #startScreen {
@@ -495,10 +502,11 @@
 
 @media screen and (max-width: 768px) {
   #pou {
-    width: 70px;
-    height: 100px;
-    bottom: 60px;
-  }
+  bottom: 10%;
+  width: 12vw;
+  height: auto;
+  aspect-ratio: 9/11;
+}
   
   #pou::after {
     top: 20px; /* Posisi Y mata mobile */
@@ -553,6 +561,53 @@
       0 0 0 2px rgba(158, 92, 72, 0.8);
   }
 }
+.card-ui {
+  background: rgba(255,255,255,0.95);
+  padding: 20px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 350px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#bmiInputs input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+#bmiInputs label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+#dailyCalorieInfo {
+  background: #e8f5e9;
+  padding: 10px;
+  border-radius: 12px;
+  width: 100%;
+  text-align: center;
+  font-weight: 600;
+}
+
+.character-option {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: 0.2s;
+}
+
+.character-option.selected {
+  transform: scale(1.05);
+  border: 2px solid #4caf50;
+}
+
 </style>
 </head>
 <body>
@@ -572,6 +627,7 @@
 </div>
 
 <div id="page2" class="page" style="display:none;">
+  <div class="card-ui">
   <h3>Pilih Karakter:</h3>
   <div id="characterSelection">
     <div class="character-container">
@@ -598,11 +654,13 @@
   <div id="dailyCalorieInfo" style="margin-top: 20px; font-size: 0.9em; color: #3a5d40; text-align: left; max-width: 280px;">
     <p>Kebutuhan Kalori Harian Anda: <span id="displayBMR">0</span> kkal</p>
     <div style="display:none;"><span id="dailyCalorieTarget">0</span></div> 
-  </div>>
+  </div>
 
 
   <button id="startButton">Mulai Game</button>
 </div>
+</div> <!-- nutup card-ui -->
+</div> <!-- nutup page2 -->
 
 <!-- Info Overlay (Modal) -->
 <div id="infoOverlay" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
@@ -693,7 +751,7 @@
   <div class="imt-legend">
     <div class="legend-item"><span class="dot thin"></span> < 18.5 Kurus</div>
     <div class="legend-item"><span class="dot normal"></span> 18.5-24.9 Normal</div>
-    <div class="legend-item"><span class="dot over"></span> 25-29.9 Gemuk</div>
+    <div class="legend-item"><span class="dot over"></span> 25-29.9 Obesitas</div>
   </div>
   <div id="imtStatus">NORMAL</div>
 </div>
@@ -846,13 +904,15 @@
   
 
     function initializeSizes() {
-      containerWidth = gameContainer.clientWidth;
-      containerHeight = gameContainer.clientHeight;
-      pouWidth = pou.offsetWidth;
-      pouHeight = pou.offsetHeight;
-      pouX = containerWidth / 2 - pouWidth / 2;
-      pou.style.left = pouX + 'px';
-    }
+  containerWidth = gameContainer.clientWidth;
+  containerHeight = gameContainer.clientHeight;
+
+  pouWidth = pou.offsetWidth;
+  pouHeight = pou.offsetHeight;
+
+  pouX = containerWidth / 2 - pouWidth / 2;
+  pou.style.left = pouX + 'px';
+}
 
     function clamp(val, min, max) {
       return Math.min(Math.max(val, min), max);
@@ -891,7 +951,7 @@
         statusText = 'Normal (IMT: ' + IMT.toFixed(1) + ')';
         color = '#27ae60';
       } else if (IMT <= IMT_OVERWEIGHT_MAX) {
-        statusText = 'Kelebihan Berat Badan (IMT: ' + IMT.toFixed(1) + ')';
+        statusText = 'Obesitas (IMT: ' + IMT.toFixed(1) + ')';
         color = '#e67e22';
       } else {
         statusText = 'Obesitas (IMT: ' + IMT.toFixed(1) + ')';
