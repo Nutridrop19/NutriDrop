@@ -39,19 +39,21 @@
 }
 
   #pou {
-  z-index: 1000;
-  position: absolute;
-  bottom: 85px;
+   position: absolute;
+  bottom: 12%;
   left: 50%;
   transform: translateX(-50%);
-   width: clamp(60px, 12vw, 120px);
-  height: 110px;
 
-  background-size: cover;
+  width: clamp(90px, 18vw, 140px);
+  aspect-ratio: 9/11;
+  height: auto;
+
+  background-size: contain;
   background-repeat: no-repeat;
   background-position: center bottom;
-  background-color: transparent;
   background-image: url('Male.png');
+
+  z-index: 1000;
 }
 
   /* Female Character */
@@ -64,8 +66,9 @@
   .foodItem {
     position: absolute;
     top: -60px;
-    width: 30px;
-    height: 30px;
+      width: clamp(20px, 6vw, 30px);
+  height: clamp(20px, 6vw, 30px);
+  font-size: clamp(14px, 5vw, 22px);
     user-select: none;
     font-size: 22px;
     text-align: center;
@@ -1246,7 +1249,7 @@ margin-top: 5px;
       page2.style.display = 'none';
       page3.style.display = 'flex';
       initializeSizes();
-
+pou.style.bottom = "8%";
       gameRunning = true;
       lastDropTime = 0;
       currentCalories = 0; // Reset kalori saat memulai game
