@@ -40,21 +40,22 @@
 
   #pou {
    position: absolute;
-  bottom: 50%;
+  bottom: 12vh;
   left: 50%;
   transform: translateX(-50%);
-  width: clamp(90px, 18vw, 140px);
+
+  width: 14vh;
   aspect-ratio: 9/11;
-  height: auto;
 
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center bottom;
-  background-image: url('Male.png');
 
   z-index: 1000;
 }
-
+#pou.male {
+  background-image: url('Male.png');
+}
   /* Female Character */
   #pou.female {
   background-image: url('Female.png');
@@ -65,9 +66,9 @@
   .foodItem {
     position: absolute;
     top: -60px;
-      width: clamp(20px, 6vw, 30px);
-  height: clamp(20px, 6vw, 30px);
-  font-size: clamp(14px, 5vw, 22px);
+      width: 5vh;
+  height: 5vh;
+  font-size: 4vh;
     user-select: none;
     font-size: 22px;
     text-align: center;
@@ -319,6 +320,7 @@ margin-top: 5px;
     background: #99DEFB;
   }
   #page2 {
+    background: linear-gradient(135deg, #99DEFB, #6dd5ed);
     justify-content: center;
   align-items: center;
     background: #99DEFB;
@@ -399,20 +401,23 @@ margin-top: 5px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   }
   #startButton {
-    padding: 14px 36px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: white;
-    background: #27ae60;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    box-shadow: 0 6px 12px rgba(39, 174, 96, 0.7);
-    transition: background 0.3s ease;
-    min-width: 130px;
-  }
-  #startButton:hover {
-    background: #1e834f;
+     margin-top: 15px;
+  padding: 14px 30px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  border: none;
+  border-radius: 20px;
+
+  box-shadow: 0 8px 20px rgba(46, 204, 113, 0.5);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#startButton:hover {
+  transform: scale(1.05);
   }
 
   /* Info Button on Start Screen */
@@ -564,24 +569,28 @@ margin-top: 5px;
   }
 }
 .card-ui {
-  background: rgba(255,255,255,0.95);
-  padding: 20px;
-  border-radius: 20px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px);
+  padding: 25px;
+  border-radius: 25px;
   width: 90%;
   max-width: 350px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 12px;
 }
 
 #bmiInputs input {
   width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  margin-bottom: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  background: #f5f7fa;
   font-size: 14px;
+  outline: none;
 }
 
 #bmiInputs label {
@@ -701,6 +710,11 @@ margin-top: 5px;
         </ul>
       </li>
       <li>Game berakhir jika IMT Nutrie mencapai atau melebihi 30 (Obesitas).</li>
+    </ul>
+    <h3>Tingkat Kesulitan:</h3>
+    <ul>
+      <li>Saat ini, game dimulai pada tingkat kesulitan 'Mudah'.</li>
+      <li>Setelah 30 detik bermain, kecepatan jatuh makanan dan frekuensi kemunculannya akan meningkat secara otomatis untuk menambah tantangan.</li>
     </ul>
     <h3>Tips Bermain:</h3>
     <ul>
@@ -922,9 +936,10 @@ margin-top: 5px;
       food.classList.add('foodItem', foodData.className);
       food.setAttribute('aria-label', foodData.label);
       food.textContent = foodData.emoji;
-      const x = Math.random() * (containerWidth - 30);
+      const foodSize = containerHeight * 0.05;
+const x = Math.random() * (containerWidth - foodSize);
       food.style.left = x + 'px';
-      food.style.top = '-60px'; // Pastikan makanan selalu dimulai di atas layar
+     food.style.top = -foodSize + 'px'; // Pastikan makanan selalu dimulai di atas layar
 
       gameContainer.appendChild(food);
 
@@ -963,7 +978,7 @@ margin-top: 5px;
 
     function updateFoods() {
       if (!gameRunning) return;
-      const pouTop = containerHeight - pouHeight - 30; // Posisi Y bagian atas Pou
+      const pouTop = pou.offsetTop; // Posisi Y bagian atas Pou
 
       for (let i = activeFoods.length -1; i >= 0; i--) {
         const f = activeFoods[i];
@@ -1116,7 +1131,11 @@ margin-top: 5px;
     }
 
     function endGame(reason = 'obesity') {
-      gameRunning = false;
+
+  menuMusic.pause();
+  gameMusic.pause();
+
+  gameRunning = false;
       if(animationFrameId) cancelAnimationFrame(animationFrameId);
 
       // Update Best Score (sekarang melacak kalori tertinggi)
@@ -1165,6 +1184,8 @@ margin-top: 5px;
     }
 
     function restartGame() {
+      switchMusic('game');
+
       gameOverOverlay.style.display = 'none'; // Sembunyikan overlay game over
       resetGameStates(); // Reset semua state game
       // Set kecepatan dan interval berdasarkan kesulitan "easy"
@@ -1180,6 +1201,7 @@ margin-top: 5px;
     restartBtn.addEventListener('click', restartGame);
 
     function goToMainMenu() {
+      switchMusic('menu');
       gameOverOverlay.style.display = 'none'; // Sembunyikan overlay game over
       page3.style.display = 'none'; // Sembunyikan page3
       resetGameStates(); // Reset semua state game
