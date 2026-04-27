@@ -296,9 +296,18 @@ margin-top: 5px;
     box-shadow: 0 6px 12px rgba(33, 150, 243, 0.6);
     margin-top: 15px;
   }
+
   #mainMenuBtn:hover {
     background: #1976D2;
   }
+
+ #materiBtn {
+  background: #03a9f4;
+  box-shadow: 0 6px 12px rgba(3, 169, 244, 0.6);
+}
+#materiBtn:hover {
+  background: #0288d1;
+}
   /* Start Screen */
   .page {
     position: fixed;
@@ -618,10 +627,28 @@ margin-top: 5px;
   transform: scale(1.05);
   border: 2px solid #4caf50;
 }
+#imtWarning {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  background: rgba(255, 0, 0, 0.85);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 12px;
+
+  font-weight: bold;
+  z-index: 5000;
+
+  opacity: 0;
+  transition: 0.3s;
+}
 
 </style>
 </head>
 <body>
+  <div id="imtWarning">⚠️ IMT sudah obesitas!</div>
 <div id="page1" class="page">
  
   <video autoplay loop muted playsinline style="width: 350px; height: auto; margin-bottom: -25px;">
@@ -784,6 +811,7 @@ margin-top: 5px;
     </div>
     <button id="restartBtn" aria-label="Restart Game">Restart</button>
     <button id="mainMenuBtn" aria-label="Kembali ke Menu Utama">Main Menu</button>
+    <button id="materiBtn">Materi Gizi</button>
   </div>
 </div>
 </div>
@@ -809,6 +837,10 @@ margin-top: 5px;
     const gameOverOverlay = document.getElementById('gameOverOverlay');
     const restartBtn = document.getElementById('restartBtn');
     const mainMenuBtn = document.getElementById('mainMenuBtn'); 
+    const materiBtn = document.getElementById('materiBtn');
+    materiBtn.addEventListener('click', () => {
+  window.open('https://linktr.ee/MateriGiziRemaja', '_blank');
+});
     const gameTimerDisplay = document.getElementById('gameTimer'); 
     const finalCalorieDisplay = document.getElementById('finalCalorie'); // Mengganti finalScoreDisplay
 
@@ -900,6 +932,7 @@ margin-top: 5px;
 
     let activeFoods = [];
     let gameRunning = false;
+    let warningShown = false;
     let animationFrameId = null;
     let gameStartTime = 0; 
     let speedIncreased = false; 
@@ -958,9 +991,16 @@ const x = Math.random() * (containerWidth - foodSize);
         statusText = 'Normal (IMT: ' + IMT.toFixed(1) + ')';
         color = '#27ae60';
       } else if (IMT <= IMT_OVERWEIGHT_MAX) {
-        statusText = 'Obesitas (IMT: ' + IMT.toFixed(1) + ')';
-        color = '#e67e22';
-      } else {
+  statusText = 'Overweight (IMT: ' + IMT.toFixed(1) + ')';
+  color = '#e67e22';
+
+  if (IMT >= 27 && !warningShown) {
+    showIMTWarning();
+    warningShown = true;
+  }
+}
+      
+      else {
         statusText = 'Obesitas (IMT: ' + IMT.toFixed(1) + ')';
         color = '#c0392b';
         if(gameRunning) {
@@ -970,7 +1010,14 @@ const x = Math.random() * (containerWidth - foodSize);
       imtStatusLabel.textContent = 'Status: ' + statusText;
       imtStatusLabel.style.color = color;
     }
+function showIMTWarning() {
+  const warn = document.getElementById('imtWarning');
+  warn.style.opacity = 1;
 
+  setTimeout(() => {
+    warn.style.opacity = 0;
+  }, 1500);
+}
     function updateFoods() {
       if (!gameRunning) return;
       const pouTop = pou.offsetTop; // Posisi Y bagian atas Pou
@@ -1012,6 +1059,7 @@ const x = Math.random() * (containerWidth - foodSize);
         IMT += foodData.imtChange;
         if (IMT >= IMT_OBESE_THRESHOLD) {
           IMT = IMT_OBESE_THRESHOLD;
+          showIMTWarning();
           // direct end handled in updateIMTStatus
         }
       }
@@ -1257,6 +1305,7 @@ const x = Math.random() * (containerWidth - foodSize);
     }
 
     function startGame() {
+      warningShown = false;
       page2.style.display = 'none';
       page3.style.display = 'flex';
       initializeSizes();
