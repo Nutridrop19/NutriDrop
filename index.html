@@ -40,9 +40,7 @@
 
   #pou {
    position: absolute;
-  bottom: 12vh;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 14vh;
 
   width: 14vh;
   aspect-ratio: 9/11;
@@ -517,11 +515,6 @@ margin-top: 5px;
 
 
 @media screen and (max-width: 768px) {
-  #pou {
-  bottom: 10%;
-  width: 12vw;
-  height: auto;
-  aspect-ratio: 9/11;
 }
   
   #pou::after {
@@ -563,7 +556,7 @@ margin-top: 5px;
       16px 68px #ff69b4, 20px 68px #ff69b4, 24px 68px #ff69b4, 28px 68px #ff69b4, 32px 68px #ff69b4, 36px 68px #ff69b4, 40px 68px #ff69b4, 44px 68px #ff69b4,
       20px 72px #ff69b4, 24px 72px #ff69b4, 28px 72px #ff69b4, 32px 72px #ff69b4, 36px 72px #ff69b4, 40px 72px #ff69b4;
   }
-}
+
 
 /* Keyframes for pou shadow pulse (dapat dihapus jika tidak digunakan) */
 @keyframes pulse-shadow {
@@ -951,6 +944,7 @@ margin-top: 5px;
 
   pouX = containerWidth / 2 - pouWidth / 2;
   pou.style.left = pouX + 'px';
+  pou.style.bottom = (containerHeight * 0.14) + 'px';
 }
 
     function clamp(val, min, max) {
@@ -1030,7 +1024,13 @@ function showIMTWarning() {
         // Cek tabrakan dengan Pou
         // Makanan dianggap bertabrakan jika bagian bawah makanan mencapai atau melewati bagian atas Pou
         // DAN posisi horizontalnya tumpang tindih dengan Pou
-        if (f.y + 30 >= pouTop && f.x + 30 > pouX && f.x < pouX + pouWidth) {
+        const foodSize = containerHeight * 0.05;
+
+if (
+  f.y + foodSize >= pouTop &&
+  f.x + foodSize > pouX &&
+  f.x < pouX + pouWidth
+) {
           eatFood(f.data);
           removeFood(i);
           continue; // Lanjut ke makanan berikutnya setelah menghapus
@@ -1069,12 +1069,13 @@ function showIMTWarning() {
       updateIMTStatus();
     }
 
-    function movePou(x) {
-      const minX = 0;
-      const maxX = containerWidth - pouWidth;
-      pouX = clamp(x, minX, maxX);
-      pou.style.left = pouX + 'px';
-    }
+   function movePou(x) {
+  const minX = 0;
+  const maxX = gameContainer.clientWidth - pou.offsetWidth;
+
+  pouX = clamp(x, minX, maxX);
+  pou.style.left = pouX + 'px';
+}
 
     let keysPressed = {};
     let keyboardEnabled = false;
