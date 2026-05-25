@@ -620,12 +620,14 @@ margin-top: 5px;
   transform: scale(1.05);
   border: 2px solid #4caf50;
 }
+
 #sessionOverlay{
 position: fixed;
 inset: 0;
 
-display: flex;
-flex-direction: column;
+display:none;
+
+flex-direction:column;
 
 justify-content: center;
 align-items: center;
@@ -674,15 +676,17 @@ max-width: 700px;
 }
 
 #sessionTitle{
-  font-size:18px;
-  font-weight:900;
-  color:#2e7d32;
+font-size:clamp(30px,6vw,64px);
+font-weight:900;
+color:white;
 }
 
 #sessionDesc{
-margin-top:6px;
-font-size:13px;
-max-width:240px;
+margin-top:12px;
+font-size:clamp(16px,2vw,26px);
+line-height:1.5;
+max-width:700px;
+color:rgba(255,255,255,.9);
 }
 
 #imtWarning {
@@ -1015,7 +1019,7 @@ document.createElement("span");
     let speedIncreased = false; 
     let elapsedTime = 0; 
   
-const BREAK_DURATION = 10000;
+const BREAK_DURATION = 0;
 const SESSION_DURATION = 15000;
 const sessionDesc =
 document.getElementById('sessionDesc');
@@ -1257,38 +1261,28 @@ endGame();
       const remainingSeconds = seconds % 60;
       return String(minutes).padStart(2, '0') + ':' + String(remainingSeconds).padStart(2, '0');
     }
-function updateSessionUI(){
-
-let cycle =
-BREAK_DURATION + SESSION_DURATION;
+ function updateSessionUI(){
 
 let session =
-Math.floor(elapsedTime/cycle);
-currentRound =
-Math.min(
-session+1,
-4
+Math.floor(
+elapsedTime /
+SESSION_DURATION
 );
 
-document
-.getElementById(
-"roundValue"
-)
-.textContent =
+if(session>3){
+endGame("timeup");
+return;
+}
+
+currentRound=session+1;
+
+roundValue.textContent=
 currentRound+" / 4";
 
-if(session>3) session=3;
-
-let localTime =
-elapsedTime % cycle;
-
-isBreak =
-localTime < BREAK_DURATION;
-
-sessionTitle.textContent =
+sessionTitle.textContent=
 sessions[session].title;
 
-sessionDesc.textContent =
+sessionDesc.textContent=
 sessions[session].desc;
 
 const overlay =
@@ -1296,52 +1290,31 @@ document.getElementById(
 "sessionOverlay"
 );
 
-if(isBreak){
-
-overlay.style.display =
+overlay.style.display=
 "flex";
 
-sessionCountdown.textContent =
-"Mulai dalam "+
-Math.ceil(
-(BREAK_DURATION-localTime)
-/1000
-);
+clearTimeout(window.overlayTimeout);
 
-}else{
-
+window.overlayTimeout =
+setTimeout(()=>{
 overlay.style.display =
 "none";
-
-sessionCountdown.textContent =
-Math.ceil(
-(cycle-localTime-BREAK_DURATION)
-/1000
-);
-
-}
-
+},1500);
 
 }
 
 function updateTimerDisplay(){
 
-let cycle =
-BREAK_DURATION +
-SESSION_DURATION;
-
-let local =
-elapsedTime % cycle;
+const countdown =
+Math.max(
+0,
+Math.floor(
+remainingTime/1000
+)
+);
 
 gameTimerDisplay.textContent =
-isBreak
-? Math.ceil(
-(BREAK_DURATION-local)/1000
-)
-: Math.ceil(
-(SESSION_DURATION-
-(local-BREAK_DURATION))/1000
-);
+String(countdown);
 
 }
 
@@ -1366,7 +1339,13 @@ endGame("timeup");
 return;
 }
 
+let nextSession = Math.floor(
+elapsedTime / SESSION_DURATION
+) + 1;
+
+if(nextSession !== currentRound){
 updateSessionUI();
+}
 updateTimerDisplay();
 
 let deltaDrop =
@@ -1511,17 +1490,15 @@ switchMusic("menu");
       resetGameStates();
 
       gameRunning = true;
+      gameStartTime = performance.now();
+      updateSessionUI();
       lastDropTime = 0;
       currentCalories = 0; // Reset kalori saat memulai game
       IMT = 18.5;
       speedIncreased = false;
-      gameStartTime = performance.now();
-      isBreak = true;
+      
+      isBreak = false;
 
-const overlay =
-document.getElementById("sessionOverlay");
-
-overlay.style.display = "flex";
 
 lastDropTime = 0;
       elapsedTime = 0;
