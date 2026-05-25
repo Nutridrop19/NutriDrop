@@ -929,9 +929,7 @@ document.getElementById('sessionCountdown');
     const ageInput = document.getElementById('ageInput');
     const displayBMR = document.getElementById('displayBMR');
     const calorieValueDisplay =
-{
-textContent:""
-};
+document.createElement("span");
     const dailyCalorieTargetDisplay = document.getElementById('dailyCalorieTarget');
 
     let containerWidth, containerHeight;
@@ -1171,27 +1169,31 @@ if (
       }
       activeFoods.splice(index, 1);
     }
+function eatFood(foodData){
 
-   function eatFood(foodData){
+if(foodData.healthy){
 
-if(!foodData.healthy){
+IMT =
+Math.max(
+18.5,
+IMT-0.3
+);
 
-IMT += foodData.imtChange;
+}else{
 
-if(IMT>=30){
-endGame();
-}
+IMT +=
+foodData.imtChange;
 
 }
 
 updateIMTStatus();
 
+if(IMT>=30){
+endGame();
+}
+}
 
 
-      // Update displayed calories
-      calorieValueDisplay.textContent = currentCalories.toFixed(0) + ' / ' + dailyCalorieTarget.toFixed(0);
-      updateIMTStatus();
-    }
 
    function movePou(x) {
   const minX = 0;
@@ -1473,7 +1475,34 @@ gameLoop
       dailyCalorieTargetDisplay.textContent = dailyCalorieTarget.toFixed(0);
       calorieValueDisplay.textContent = currentCalories.toFixed(0) + ' / ' + dailyCalorieTarget.toFixed(0); // Update display kalori di panel IMT
     }
+    function endGame(reason="lose"){
 
+gameRunning=false;
+
+cancelAnimationFrame(
+animationFrameId
+);
+
+activeFoods.forEach(f=>{
+f.element.remove();
+});
+
+activeFoods=[];
+
+finalCalorieDisplay.textContent =
+"Round Lolos: " +
+Math.max(
+0,
+currentRound-1
+) +
+" / 4";
+
+gameOverOverlay.style.display=
+"flex";
+
+switchMusic("menu");
+
+}
     function startGame() {
       warningShown = false;
       page2.style.display = 'none';
@@ -1494,9 +1523,7 @@ document.getElementById("sessionOverlay");
 
 overlay.style.display = "flex";
 
-lastDropTime =
-performance.now() +
-BREAK_DURATION;
+lastDropTime = 0;
       elapsedTime = 0;
       remainingTime = GAME_DURATION; // Set countdown ke 30 detik
       updateTimerDisplay();
