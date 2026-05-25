@@ -493,33 +493,25 @@ margin-top: 5px;
     margin-bottom: 8px;
   }
   #infoCloseButton {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(6px);
-
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-
-  border: none;
-  cursor: pointer;
-
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  transition: 0.2s;
-}
-
-#infoCloseButton:hover {
-  transform: scale(1.1);
-  background: #f44336;
-}
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1.2em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+  }
+  #infoCloseButton:hover {
+    background: #d32f2f;
+  }
 
 
 @media screen and (max-width: 768px) {
@@ -628,6 +620,71 @@ margin-top: 5px;
   transform: scale(1.05);
   border: 2px solid #4caf50;
 }
+#sessionOverlay{
+position: fixed;
+inset: 0;
+
+display: flex;
+flex-direction: column;
+
+justify-content: center;
+align-items: center;
+
+background: rgba(0,0,0,.75);
+
+z-index: 9999;
+
+text-align: center;
+
+padding: 10vw;
+
+pointer-events: none;
+}
+
+#sessionTitle{
+font-size:
+clamp(30px,6vw,64px);
+
+font-weight: 900;
+
+color: white;
+
+margin-bottom: 14px;
+}
+
+#sessionCountdown{
+font-size:
+clamp(22px,4vw,40px);
+
+color: white;
+}
+
+#sessionDesc{
+margin-top: 12px;
+
+font-size:
+clamp(16px,2vw,26px);
+
+line-height: 1.5;
+
+color:
+rgba(255,255,255,.9);
+
+max-width: 700px;
+}
+
+#sessionTitle{
+  font-size:18px;
+  font-weight:900;
+  color:#2e7d32;
+}
+
+#sessionDesc{
+margin-top:6px;
+font-size:13px;
+max-width:240px;
+}
+
 #imtWarning {
   position: fixed;
   top: 60px;
@@ -732,9 +789,9 @@ margin-top: 5px;
       <li>Kalori: Angka kalori Anda akan ditampilkan di panel IMT. Tujuan Anda adalah menjaga kalori tetap seimbang dengan kebutuhan harian Anda.</li>
       <li>IMT (Indeks Masa Tubuh): IMT Nutrie akan berubah berdasarkan makanan yang dikonsumsi.
         <ul>
-          <li> Normal: 18.5 - 24.9</li>
-          <li> Overweight: 25 - 29.9</li>
-          <li> Obese: ≥ 30 (Game Over!)</li>
+          <li>**Normal:** 18.5 - 24.9</li>
+          <li>**Overweight:** 25 - 29.9</li>
+          <li>**Obese:** ≥ 30 (Game Over!)</li>
         </ul>
       </li>
       <li>Game berakhir jika IMT Nutrie mencapai atau melebihi 30 (Obesitas).</li>
@@ -778,7 +835,13 @@ margin-top: 5px;
   <div id="pou" aria-label="Pou character">
     <!-- Mulut dihapus -->
   </div>
-  
+
+  <div id="sessionOverlay">
+  <div id="sessionTitle">SESI 1</div>
+  <div id="sessionCountdown">10</div>
+<div id="sessionDesc"></div>
+</div>
+
  <div id="imtPanel">
  <div class="panel-row-top">
   <div class="label-kategori">KLASIFIKASI IMT</div>
@@ -791,14 +854,19 @@ margin-top: 5px;
 </div>
 
   <div class="panel-row-bottom">
-    <div class="info-item">
-      <span class="emoji">🔥</span>
-      <span id="calorieValue">0 / 0</span>
-    </div>
-    <div class="info-item">
-      <span class="emoji">⏱️</span>
-      <span id="gameTimer">00:00</span>
-    </div>
+
+<div class="info-item">
+🏆 Round
+<span id="roundValue">0 / 4</span>
+</div>
+
+<div class="info-item">
+⏱️
+<span id="gameTimer">15</span>
+</div>
+
+</div>
+
   </div>
 </div>
   
@@ -843,6 +911,12 @@ margin-top: 5px;
   window.open('https://linktr.ee/MateriGiziRemaja', '_blank');
 });
     const gameTimerDisplay = document.getElementById('gameTimer'); 
+    const sessionTitle =
+document.getElementById('sessionTitle');
+
+const sessionCountdown =
+
+document.getElementById('sessionCountdown');
     const finalCalorieDisplay = document.getElementById('finalCalorie'); // Mengganti finalScoreDisplay
 
     const characterSelection = document.getElementById('characterSelection');
@@ -854,13 +928,17 @@ margin-top: 5px;
     const heightInput = document.getElementById('heightInput');
     const ageInput = document.getElementById('ageInput');
     const displayBMR = document.getElementById('displayBMR');
-    const calorieValueDisplay = document.getElementById('calorieValue'); // Mengganti scoreValue
+    const calorieValueDisplay =
+{
+textContent:""
+};
     const dailyCalorieTargetDisplay = document.getElementById('dailyCalorieTarget');
 
     let containerWidth, containerHeight;
     let pouWidth, pouHeight;
     let pouX = 0;
-    let currentCalories = 0; // Mengganti 'score' menjadi 'currentCalories'
+    let currentCalories = 0;
+    let currentRound = 0;// Mengganti 'score' menjadi 'currentCalories'
     let dailyCalorieTarget = 0;
     let BMR = 0; // Variabel untuk menyimpan BMR yang dihitung
 
@@ -938,7 +1016,41 @@ margin-top: 5px;
     let gameStartTime = 0; 
     let speedIncreased = false; 
     let elapsedTime = 0; 
-    const GAME_DURATION = 60000; // 30 detik dalam milidetik
+  
+const BREAK_DURATION = 10000;
+const SESSION_DURATION = 15000;
+const sessionDesc =
+document.getElementById('sessionDesc');
+
+let isBreak=false;
+
+
+const sessions = [
+{
+title:"SESI 1",
+desc:"Tangkap makanan sehat"
+},
+{
+title:"SESI 2",
+desc:"Hindari makanan tidak sehat"
+},
+{
+title:"SESI 3",
+desc:"Jaga kalori tetap aman"
+},
+{
+title:"SESI 4",
+desc:"Main bebas seperti sekarang"
+}
+];
+
+const TOTAL_STAGE =
+(BREAK_DURATION+SESSION_DURATION)*4;
+
+const GAME_DURATION =
+TOTAL_STAGE;
+
+
     let remainingTime = GAME_DURATION; // Waktu tersisa untuk countdown
 
   
@@ -1006,6 +1118,7 @@ const x = Math.random() * (containerWidth - foodSize);
         statusText = 'Obesitas (IMT: ' + IMT.toFixed(1) + ')';
         color = '#c0392b';
         if(gameRunning) {
+          switchMusic('menu');
           endGame();
         }
       }
@@ -1059,18 +1172,21 @@ if (
       activeFoods.splice(index, 1);
     }
 
-    function eatFood(foodData) {
-      currentCalories += foodData.calorieChange; // Menggunakan calorieChange
-      if (currentCalories < 0) currentCalories = 0; // Pastikan kalori tidak negatif
+   function eatFood(foodData){
 
-      if (!foodData.healthy) {
-        IMT += foodData.imtChange;
-        if (IMT >= IMT_OBESE_THRESHOLD) {
-          IMT = IMT_OBESE_THRESHOLD;
-          showIMTWarning();
-          // direct end handled in updateIMTStatus
-        }
-      }
+if(!foodData.healthy){
+
+IMT += foodData.imtChange;
+
+if(IMT>=30){
+endGame();
+}
+
+}
+
+updateIMTStatus();
+
+
 
       // Update displayed calories
       calorieValueDisplay.textContent = currentCalories.toFixed(0) + ' / ' + dailyCalorieTarget.toFixed(0);
@@ -1096,7 +1212,6 @@ if (
       keysPressed[e.key] = false;
     }
     function handleKeyboardMove() {
-      if (!gameRunning) return;
       if (!keyboardEnabled) return;
       const moveSpeed = 7;
       if (keysPressed['ArrowLeft'] || keysPressed['Left']) {
@@ -1109,7 +1224,6 @@ if (
 
     let dragging = false;
     function pointerDown(e) {
-      if (!gameRunning) return;
       e.preventDefault();
       let pointerX = e.clientX ?? e.touches?.[0]?.clientX;
       if (!pointerX) return;
@@ -1119,8 +1233,8 @@ if (
         pou.style.cursor = "grabbing";
       }
     }
-    function pointerMove(e) {
-      if (!dragging || !gameRunning) return;
+      function pointerMove(e) {
+      if (!dragging) return;
       e.preventDefault();
       const rect = gameContainer.getBoundingClientRect();
       let pointerX = e.clientX ?? e.touches?.[0]?.clientX;
@@ -1141,78 +1255,141 @@ if (
       const remainingSeconds = seconds % 60;
       return String(minutes).padStart(2, '0') + ':' + String(remainingSeconds).padStart(2, '0');
     }
+function updateSessionUI(){
 
-    function updateTimerDisplay() {
-      gameTimerDisplay.textContent = 'Waktu: ' + formatTime(remainingTime);
-    }
+let cycle =
+BREAK_DURATION + SESSION_DURATION;
 
-    function gameLoop(time=0) {
-      if (!gameRunning) return;
-      if (!lastDropTime) lastDropTime = time;
-      let deltaDrop = time - lastDropTime;
+let session =
+Math.floor(elapsedTime/cycle);
+currentRound =
+Math.min(
+session+1,
+4
+);
 
-      // Update elapsed time dan remaining time
-      elapsedTime = time - gameStartTime;
-      remainingTime = GAME_DURATION - elapsedTime;
-      
-      // Cek jika waktu habis
-      if (remainingTime <= 0) {
-        remainingTime = 0;
-        updateTimerDisplay();
-        endGame('timeup'); // Kirim parameter untuk membedakan jenis game over
-        return;
-      }
-      
-      updateTimerDisplay(); 
+document
+.getElementById(
+"roundValue"
+)
+.textContent =
+currentRound+" / 4";
 
-      // Logika peningkatan kecepatan setelah 15 detik (setengah waktu)
-      if (!speedIncreased && remainingTime <= 25000) {
-        currentFallingSpeedBase *= currentSpeedIncreaseFactor; 
-        currentDropIntervalMs *= currentDropIntervalDecreaseFactor; 
-        speedIncreased = true; 
-        console.log("Kecepatan game meningkat!");
-      }
+if(session>3) session=3;
 
-      if (deltaDrop > currentDropIntervalMs) { // Menggunakan currentDropIntervalMs
-        createFood();
-        lastDropTime = time;
-      }
-      updateFoods();
-      handleKeyboardMove();
-      animationFrameId = requestAnimationFrame(gameLoop);
-    }
+let localTime =
+elapsedTime % cycle;
 
-    function endGame(reason = 'obesity') {
+isBreak =
+localTime < BREAK_DURATION;
 
-  menuMusic.pause();
-  gameMusic.pause();
+sessionTitle.textContent =
+sessions[session].title;
 
-  gameRunning = false;
-      if(animationFrameId) cancelAnimationFrame(animationFrameId);
+sessionDesc.textContent =
+sessions[session].desc;
 
-      // Update Best Score (sekarang melacak kalori tertinggi)
-        let bestScore = parseInt(localStorage.getItem('bestScore')) || 0; // Sekarang melacak kalori tertinggi
+const overlay =
+document.getElementById(
+"sessionOverlay"
+);
 
-      if (currentCalories > bestScore) {
-        bestScore = currentCalories;
-        localStorage.setItem('bestScore', bestScore);
-      }
+if(isBreak){
 
-      // Ubah pesan berdasarkan alasan game over
-      const gameOverDesc = document.getElementById('gameOverDesc');
-      if (reason === 'timeup') {
-        gameOverDesc.textContent = 'Waktu habis! Selamat, Anda berhasil bertahan!';
-      } else {
-        gameOverDesc.textContent = 'IMT Anda sudah obesitas! Yuk lebih sehat!';
-      }
+overlay.style.display =
+"flex";
 
-      // Tampilkan kalori dan waktu di overlay Game Over
-      finalCalorieDisplay.textContent = 'Kalori Anda: ' + currentCalories.toFixed(0) + ' / ' + dailyCalorieTarget.toFixed(0);
+sessionCountdown.textContent =
+"Mulai dalam "+
+Math.ceil(
+(BREAK_DURATION-localTime)
+/1000
+);
+
+}else{
+
+overlay.style.display =
+"none";
+
+sessionCountdown.textContent =
+Math.ceil(
+(cycle-localTime-BREAK_DURATION)
+/1000
+);
+
+}
 
 
-      gameOverOverlay.style.display = 'flex';
-    }
+}
 
+function updateTimerDisplay(){
+
+let cycle =
+BREAK_DURATION +
+SESSION_DURATION;
+
+let local =
+elapsedTime % cycle;
+
+gameTimerDisplay.textContent =
+isBreak
+? Math.ceil(
+(BREAK_DURATION-local)/1000
+)
+: Math.ceil(
+(SESSION_DURATION-
+(local-BREAK_DURATION))/1000
+);
+
+}
+
+function gameLoop(time=0){
+
+if(!gameRunning) return;
+
+if(!lastDropTime)
+lastDropTime=time;
+
+elapsedTime =
+time-gameStartTime;
+
+remainingTime =
+GAME_DURATION-
+elapsedTime;
+
+if(
+remainingTime<=0
+){
+endGame("timeup");
+return;
+}
+
+updateSessionUI();
+updateTimerDisplay();
+
+let deltaDrop =
+time-lastDropTime;
+
+if(
+!isBreak &&
+deltaDrop>=
+currentDropIntervalMs
+){
+createFood();
+lastDropTime=time;
+}
+
+handleKeyboardMove();
+
+if(!isBreak){
+updateFoods();
+}
+
+animationFrameId =
+requestAnimationFrame(
+gameLoop
+);
+}
     // Fungsi untuk mereset semua state game ke kondisi awal (sebelum game dimulai)
     function resetGameStates() {
       activeFoods.forEach(f => {
@@ -1221,8 +1398,7 @@ if (
       activeFoods.length = 0;
       currentCalories = 0; // Reset kalori
       IMT = 18.5;
-      speedIncreased = false; 
-      gameRunning = false; // Pastikan game tidak berjalan
+      speedIncreased = false; // Pastikan game tidak berjalan
       if(animationFrameId) cancelAnimationFrame(animationFrameId); // Hentikan animasi jika ada
       lastDropTime = 0;
       gameStartTime = 0; 
@@ -1235,22 +1411,7 @@ if (
       pouX = containerWidth / 2 - pouWidth / 2;
     }
 
-    function restartGame() {
-      switchMusic('game');
-
-      gameOverOverlay.style.display = 'none'; // Sembunyikan overlay game over
-      resetGameStates(); // Reset semua state game
-      // Set kecepatan dan interval berdasarkan kesulitan "easy"
-      currentFallingSpeedBase = difficultySettings.easy.fallingSpeed;
-      currentDropIntervalMs = difficultySettings.easy.dropInterval;
-      currentSpeedIncreaseFactor = difficultySettings.easy.speedIncreaseFactor;
-      currentDropIntervalDecreaseFactor = difficultySettings.easy.dropIntervalDecreaseFactor;
-      
-      gameRunning = true; // Mulai game lagi
-      gameStartTime = performance.now(); // Reset waktu mulai game
-      animationFrameId = requestAnimationFrame(gameLoop); // Mulai loop game
-    }
-    restartBtn.addEventListener('click', restartGame);
+    restartBtn.addEventListener('click', startGame);
 
     function goToMainMenu() {
       switchMusic('menu');
@@ -1318,12 +1479,25 @@ if (
       page2.style.display = 'none';
       page3.style.display = 'flex';
       initializeSizes();
+      resetGameStates();
+
       gameRunning = true;
       lastDropTime = 0;
       currentCalories = 0; // Reset kalori saat memulai game
       IMT = 18.5;
       speedIncreased = false;
       gameStartTime = performance.now();
+      isBreak = true;
+
+const overlay =
+document.getElementById("sessionOverlay");
+
+overlay.style.display = "flex";
+
+lastDropTime =
+performance.now() +
+BREAK_DURATION;
+      elapsedTime = 0;
       remainingTime = GAME_DURATION; // Set countdown ke 30 detik
       updateTimerDisplay();
       calorieValueDisplay.textContent = currentCalories.toFixed(0) + ' / ' + dailyCalorieTarget.toFixed(0); // Update display
@@ -1426,23 +1600,16 @@ document.addEventListener('click', () => {
     }
 }, { once: true });
 
-// Integrasi ke navigasi yang sudah ada tanpa menghapus listener lama
-nextToPage2.addEventListener('click', () => {
-    switchMusic('menu');
-});
+document.addEventListener('click', () => {
+ if(!musicInitialized){
+   switchMusic('menu');
+   musicInitialized=true;
+ }
+},{once:true});
 
-// Gunakan 'mousedown' atau 'click' pada startButton untuk ganti ke musik game
-startButton.addEventListener('click', () => {
-    switchMusic('game');
-});
 
 // Tambahkan ke fungsi endGame yang ada agar musik kembali ke menu
 // Kita bungkus fungsi aslinya
-const originalEndGame = endGame;
-endGame = function() {
-    originalEndGame();
-    switchMusic('menu');
-};
 </script>
 </body>
 </html>
