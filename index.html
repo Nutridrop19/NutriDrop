@@ -147,7 +147,8 @@ border-radius: 0 0 20px 20px;
 #imtStatus {
   font-size: 18px;
   font-weight: 900;
-  color: white;
+  color:#2e7d32;
+text-shadow:none;
   text-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
@@ -854,7 +855,36 @@ color:rgba(255,255,255,.9);
     <div class="legend-item"><span class="dot normal"></span> 18.5-24.9 Normal</div>
     <div class="legend-item"><span class="dot over"></span> 25-29.9 Obesitas</div>
   </div>
-  <div id="imtStatus">NORMAL</div>
+  <div id="imtStatus">
+Progress Belajar
+</div>
+
+<div
+style="
+width:90%;
+height:14px;
+background:#d9d9d9;
+border-radius:999px;
+overflow:hidden;
+margin-top:8px;
+">
+
+<div
+id="progressFill"
+style="
+width:0%;
+height:100%;
+background:
+linear-gradient(
+90deg,
+#4caf50,
+#8bc34a
+);
+transition:.4s;
+">
+</div>
+
+</div>
 </div>
 
   <div class="panel-row-bottom">
@@ -877,7 +907,8 @@ color:rgba(255,255,255,.9);
   <div id="gameOverOverlay" role="alertdialog" aria-modal="true" aria-labelledby="gameOverTitle" aria-describedby="gameOverDesc">
     <div id="gameOverTitle">Game Over</div>
     <div id="gameOverDesc" style="margin-top:12px; font-weight:400; font-size:18px;">
-      IMT Anda sudah obesitas! Yuk lebih sehat!
+      Permainan selesai!
+Cek progres belajarmu
     </div>
     <div id="gameOverDetails">
       <span id="finalCalorie">Kalori Anda: 0 / 0</span>
@@ -944,12 +975,53 @@ document.createElement("span");
     let dailyCalorieTarget = 0;
     let BMR = 0; // Variabel untuk menyimpan BMR yang dihitung
 
-    let IMT = 18.5;
+  
+    let completedRound = 0;
+let mistakes = 0;
+const MAX_MISTAKES = 4;
     const IMT_NORMAL_MAX = 24.9;
     const IMT_OVERWEIGHT_MAX = 29.9;
     const IMT_OBESE_THRESHOLD = 30;
 
-    const foodItems = [
+        const foodItems = [
+
+    // PHBS / Aktivitas
+    {
+    className:'exercise',
+    healthy:true,
+    label:'🏃 Aktivitas Fisik',
+    emoji:'🏃'
+    },
+
+    {
+    className:'water',
+    healthy:true,
+    label:'💧 Minum Air',
+    emoji:'💧'
+    },
+
+    {
+    className:'sleep',
+    healthy:true,
+    label:'😴 Istirahat Cukup',
+    emoji:'😴'
+    },
+
+    {
+    className:'wash',
+    healthy:true,
+    label:'🧼 Cuci Tangan',
+    emoji:'🧼'
+    },
+
+    {
+    className:'clean',
+    healthy:true,
+    label:'🪥 Kebersihan Diri',
+    emoji:'🪥'
+    },
+
+
       // Makanan Sehat (menambah kalori sehat, IMT tetap)
       {className: 'apple', healthy: true, calorieChange: 52, imtChange: 0, label: '🍎 Apel (Sehat)', emoji: '🍎'}, // ~52 kalori per 100g
       {className: 'banana', healthy: true, calorieChange: 89, imtChange: 0, label: '🍌 Pisang (Sehat)', emoji: '🍌'}, // ~89 kalori per 100g
@@ -1007,7 +1079,7 @@ document.createElement("span");
 
     // Atur nilai default ke "easy"
     let currentFallingSpeedBase = difficultySettings.easy.fallingSpeed; 
-    let currentDropIntervalMs = difficultySettings.easy.dropInterval; 
+    let currentDropIntervalMs = 1200;
     let currentSpeedIncreaseFactor = difficultySettings.easy.speedIncreaseFactor;
     let currentDropIntervalDecreaseFactor = difficultySettings.easy.dropIntervalDecreaseFactor;
 
@@ -1027,23 +1099,82 @@ document.getElementById('sessionDesc');
 let isBreak=false;
 
 
-const sessions = [
+const sessions=[
+
 {
 title:"SESI 1",
-desc:"Tangkap makanan sehat"
+desc:"Kenali Gizi Seimbang",
+
+foods:[
+
+"apple",
+"banana",
+"carrot",
+"broccoli",
+"fish",
+
+"water",
+"exercise"
+
+]
+
 },
+
 {
 title:"SESI 2",
-desc:"Hindari makanan tidak sehat"
+desc:"Biasakan PHBS",
+
+foods:[
+
+// PHBS (yang BENAR)
+"water",
+"wash",
+"exercise",
+"sleep",
+
+// JEBAKAN (bukan PHBS)
+"burger",
+"pizza",
+"fries",
+"soda",
+"cookie",
+"hotdog",
+"icecream"
+
+]
+
+
 },
+
 {
 title:"SESI 3",
-desc:"Jaga kalori tetap aman"
+desc:"Pilih Makanan Bergizi",
+
+foods:[
+
+"apple",
+"banana",
+"carrot",
+"broccoli",
+"grape",
+"strawberry",
+"fish",
+
+"pizza",
+"burger"
+
+]
+
 },
+
 {
 title:"SESI 4",
-desc:"Main bebas seperti sekarang"
+desc:"Terapkan Semua",
+
+foods:null
+
 }
+
 ];
 
 const TOTAL_STAGE =
@@ -1073,67 +1204,107 @@ TOTAL_STAGE;
       return Math.min(Math.max(val, min), max);
     }
 
-    function createFood() {
-      if (!gameRunning) return;
-      const foodData = foodItems[Math.floor(Math.random() * foodItems.length)];
-      const food = document.createElement('div');
-      food.classList.add('foodItem', foodData.className);
-      food.setAttribute('aria-label', foodData.label);
-      food.textContent = foodData.emoji;
-      const foodSize = containerHeight * 0.05;
-const x = Math.random() * (containerWidth - foodSize);
-      food.style.left = x + 'px';
-     food.style.top = -foodSize + 'px'; // Pastikan makanan selalu dimulai di atas layar
+   function createFood(){
 
-      gameContainer.appendChild(food);
+if(!gameRunning) return;
 
-      const foodObj = {
-        element: food,
-        x: x,
-        y: -60,
-        data: foodData,
-        speed: currentFallingSpeedBase + Math.random() * 1.5 // Kecepatan jatuh makanan disesuaikan dengan kesulitan
-      };
+// ambil sesi aktif
+const activeSession =
+sessions[
+Math.max(
+0,
+currentRound-1
+)
+];
 
-      activeFoods.push(foodObj);
-    }
+// filter icon sesuai sesi
+let availableFoods =
+foodItems;
 
-    function updateIMTStatus() {
-      let statusText, color;
-      if (IMT < 18.5) {
-        statusText = 'Kurang Berat Badan (IMT: ' + IMT.toFixed(1) + ')';
-        color = '#f39c12';
-      } else if (IMT <= IMT_NORMAL_MAX) {
-        statusText = 'Normal (IMT: ' + IMT.toFixed(1) + ')';
-        color = '#27ae60';
-      } else if (IMT <= IMT_OVERWEIGHT_MAX) {
-  statusText = 'Overweight (IMT: ' + IMT.toFixed(1) + ')';
-  color = '#e67e22';
+if(
+activeSession &&
+activeSession.foods
+){
 
-  if (IMT >= 27 && !warningShown) {
-    showIMTWarning();
-    warningShown = true;
-  }
+availableFoods =
+foodItems.filter(
+food=>
+activeSession.foods.includes(
+food.className
+)
+);
+
 }
-      
-      else {
-        statusText = 'Obesitas (IMT: ' + IMT.toFixed(1) + ')';
-        color = '#c0392b';
-        if(gameRunning) {
-          switchMusic('menu');
-          endGame();
-        }
-      }
-      imtStatusLabel.textContent = 'Status: ' + statusText;
-      imtStatusLabel.style.color = color;
-    }
-function showIMTWarning() {
-  const warn = document.getElementById('imtWarning');
-  warn.style.opacity = 1;
 
-  setTimeout(() => {
-    warn.style.opacity = 0;
-  }, 1500);
+// fallback kalau kosong
+if(
+availableFoods.length===0
+){
+availableFoods=
+foodItems;
+}
+
+const foodData =
+availableFoods[
+Math.floor(
+Math.random()*
+availableFoods.length
+)
+];
+
+const food =
+document.createElement(
+'div'
+);
+
+food.classList.add(
+'foodItem',
+foodData.className
+);
+
+food.textContent =
+foodData.emoji;
+
+const foodSize =
+containerHeight*0.05;
+
+const x =
+Math.random()*
+(
+containerWidth-
+foodSize
+);
+
+food.style.left =
+x+"px";
+
+food.style.top =
+-foodSize+"px";
+
+gameContainer.appendChild(
+food
+);
+
+activeFoods.push({
+
+element:
+food,
+
+x:
+x,
+
+y:
+-foodSize,
+
+data:
+foodData,
+
+speed:
+currentFallingSpeedBase+
+Math.random()
+
+});
+
 }
     function updateFoods() {
       if (!gameRunning) return;
@@ -1176,26 +1347,23 @@ if (
 function eatFood(foodData){
 
 if(foodData.healthy){
+return;
+}
 
-IMT =
-Math.max(
-18.5,
-IMT-0.3
-);
+mistakes++;
 
-}else{
+if(mistakes>=MAX_MISTAKES){
 
-IMT +=
-foodData.imtChange;
+mistakes=MAX_MISTAKES;
+
+// langsung lompat ke sesi berikut
+gameStartTime-=SESSION_DURATION;
 
 }
 
-updateIMTStatus();
 
-if(IMT>=30){
-endGame();
 }
-}
+
 
 
 
@@ -1261,47 +1429,6 @@ endGame();
       const remainingSeconds = seconds % 60;
       return String(minutes).padStart(2, '0') + ':' + String(remainingSeconds).padStart(2, '0');
     }
- function updateSessionUI(){
-
-let session =
-Math.floor(
-elapsedTime /
-SESSION_DURATION
-);
-
-if(session>3){
-endGame("timeup");
-return;
-}
-
-currentRound=session+1;
-
-roundValue.textContent=
-currentRound+" / 4";
-
-sessionTitle.textContent=
-sessions[session].title;
-
-sessionDesc.textContent=
-sessions[session].desc;
-
-const overlay =
-document.getElementById(
-"sessionOverlay"
-);
-
-overlay.style.display=
-"flex";
-
-clearTimeout(window.overlayTimeout);
-
-window.overlayTimeout =
-setTimeout(()=>{
-overlay.style.display =
-"none";
-},1500);
-
-}
 
 function updateTimerDisplay(){
 
@@ -1322,8 +1449,10 @@ function gameLoop(time=0){
 
 if(!gameRunning) return;
 
-if(!lastDropTime)
-lastDropTime=time;
+if(lastDropTime===0){
+lastDropTime=
+time-500;
+}
 
 elapsedTime =
 time-gameStartTime;
@@ -1333,10 +1462,30 @@ GAME_DURATION-
 elapsedTime;
 
 if(
-remainingTime<=0
+elapsedTime>=
+GAME_DURATION
 ){
-endGame("timeup");
+
+if(
+mistakes < MAX_MISTAKES
+){
+completedRound++;
+}
+
+completedRound =
+Math.min(
+completedRound,
+4
+);
+
+updateProgress();
+
+endGame(
+"finish"
+);
+
 return;
+
 }
 
 let nextSession = Math.floor(
@@ -1345,8 +1494,22 @@ elapsedTime / SESSION_DURATION
 
 if(nextSession !== currentRound){
 updateSessionUI();
+
 }
 updateTimerDisplay();
+
+sessionCountdown.textContent =
+Math.max(
+0,
+15-
+Math.floor(
+(
+elapsedTime%
+SESSION_DURATION
+)
+/1000
+)
+);
 
 let deltaDrop =
 time-lastDropTime;
@@ -1373,12 +1536,25 @@ gameLoop
 }
     // Fungsi untuk mereset semua state game ke kondisi awal (sebelum game dimulai)
     function resetGameStates() {
+      mistakes=0;
+
+currentRound=0;
+
+completedRound=0;
+
+gameRunning=false;
+
+clearTimeout(
+window.overlayTimeout
+);
       activeFoods.forEach(f => {
         if (f.element.parentNode) f.element.parentNode.removeChild(f.element);
       });
       activeFoods.length = 0;
       currentCalories = 0; // Reset kalori
-      IMT = 18.5;
+      completedRound = 0;
+
+      updateProgress();
       speedIncreased = false; // Pastikan game tidak berjalan
       if(animationFrameId) cancelAnimationFrame(animationFrameId); // Hentikan animasi jika ada
       lastDropTime = 0;
@@ -1387,7 +1563,6 @@ gameLoop
       remainingTime = GAME_DURATION; // Reset countdown ke 30 detik
       updateTimerDisplay(); 
       calorieValueDisplay.textContent = currentCalories.toFixed(0) + ' / ' + dailyCalorieTarget.toFixed(0); // Update display
-      updateIMTStatus();
       pou.style.left = (containerWidth / 2 - pouWidth / 2) + 'px';
       pouX = containerWidth / 2 - pouWidth / 2;
     }
@@ -1462,24 +1637,138 @@ cancelAnimationFrame(
 animationFrameId
 );
 
-activeFoods.forEach(f=>{
-f.element.remove();
-});
+activeFoods.forEach(
+f=>f.element.remove()
+);
 
 activeFoods=[];
 
-finalCalorieDisplay.textContent =
-"Round Lolos: " +
-Math.max(
-0,
-currentRound-1
-) +
-" / 4";
+finalCalorieDisplay.textContent=
+"Progress: "+
+Math.round(
+(completedRound/4)*100
+)+"%";
 
 gameOverOverlay.style.display=
 "flex";
 
-switchMusic("menu");
+switchMusic(
+"menu"
+);
+
+
+
+}
+function updateProgress(){
+
+let percent =
+(
+completedRound/
+4
+)*100;
+
+document
+.getElementById(
+"progressFill"
+)
+.style.width =
+percent+"%";
+
+}
+function updateSessionUI(){
+
+const oldRound = currentRound;
+
+// simpan hasil round lama cuma sekali
+if(
+oldRound > 0 &&
+mistakes < MAX_MISTAKES
+){
+completedRound =
+Math.min(
+completedRound + 1,
+4
+);
+}
+
+updateProgress();
+
+// hitung round aktif
+const session =
+Math.min(
+3,
+Math.floor(
+elapsedTime /
+SESSION_DURATION
+)
+);
+
+currentRound = session + 1;
+
+// RESET SEMUA STATE ROUND BARU
+mistakes = 0;
+
+// buang makanan sisa round sebelumnya
+activeFoods.forEach(f=>{
+if(f.element?.parentNode){
+f.element.remove();
+}
+});
+
+activeFoods=[];
+
+// reset timing drop
+lastDropTime =
+performance.now()-700;
+
+// spawn awal round baru
+createFood();
+createFood();
+
+roundValue.textContent =
+currentRound + " / 4";
+
+sessionTitle.textContent =
+sessions[session].title;
+
+sessionDesc.textContent =
+sessions[session].desc;
+
+sessionCountdown.textContent =
+15;
+
+// overlay
+const overlay =
+document.getElementById(
+"sessionOverlay"
+);
+
+overlay.style.display =
+"flex";
+
+overlay.style.opacity =
+0;
+
+requestAnimationFrame(()=>{
+overlay.style.transition=
+"opacity .4s ease";
+overlay.style.opacity=1;
+});
+
+clearTimeout(
+window.overlayTimeout
+);
+
+window.overlayTimeout=
+setTimeout(()=>{
+
+overlay.style.opacity=0;
+
+setTimeout(()=>{
+overlay.style.display="none";
+},400);
+
+},1400);
 
 }
     function startGame() {
@@ -1492,25 +1781,44 @@ switchMusic("menu");
       gameRunning = true;
       gameStartTime = performance.now();
       updateSessionUI();
-      lastDropTime = 0;
-      currentCalories = 0; // Reset kalori saat memulai game
-      IMT = 18.5;
-      speedIncreased = false;
-      
-      isBreak = false;
+  
+
+gameStartTime =
+performance.now();
 
 
-lastDropTime = 0;
-      elapsedTime = 0;
+speedIncreased=false;
+
+isBreak=false;
+
+elapsedTime=0;
+
+remainingTime=
+GAME_DURATION;
+
+lastDropTime=
+performance.now()-500;
+
+createFood();
+createFood();
+createFood();
+
+updateSessionUI();
+
+updateProgress();
       remainingTime = GAME_DURATION; // Set countdown ke 30 detik
       updateTimerDisplay();
-      calorieValueDisplay.textContent = currentCalories.toFixed(0) + ' / ' + dailyCalorieTarget.toFixed(0); // Update display
-      updateIMTStatus();
+      calorieValueDisplay.textContent="";
 
       // Apply selected character class
       pou.classList.remove('male', 'female');
       pou.classList.add(selectedCharacter);
+gameOverOverlay.style.display=
+"none";
 
+switchMusic(
+"game"
+);
       animationFrameId = requestAnimationFrame(gameLoop);
     }
     startButton.addEventListener('click', startGame);
