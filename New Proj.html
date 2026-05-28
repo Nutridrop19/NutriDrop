@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Food Drop - Nutrition Education Game</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0;
+    padding: 0;
+    background: #00000000;
+    font-family: 'Baloo 2', Arial, sans-serif;
+    overflow: hidden; 
+    height: 100vh;
+    user-select: none;
+    color: #3d4a4a;
+    -webkit-font-smoothing: antialiased;
+    touch-action: pan-y;
+  }
+  #gameContainer {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    outline: none;
+    background: url('Background_Game.png') no-repeat center bottom;
+  background-size: cover;
+  /* -------------------------- */
+  z-index: 1;
+}
+
+  #pou {
+   position: absolute;
+  bottom: 14vh;
+
+  width: 14vh;
+  aspect-ratio: 9/11;
+
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+
+  z-index: 1000;
+}
+#pou.male {
+  background-image: url('Male.png');
+}
+  /* Female Character */
+  #pou.female {
+  background-image: url('Female.png');
+}
+
+
+  /* Food */
+  .foodItem {
+    position: absolute;
+    top: -60px;
+      width: 5vh;
+  height: 5vh;
+  font-size: 4vh;
+    user-select: none;
+    font-size: 22px;
+    text-align: center;
+    line-height: 30px;
+    cursor: default;
+    pointer-events: none;
+    transition: text-shadow 0.3s ease-in-out; 
+    border-radius: 50%; 
+    background-color: transparent;
+  }
+
+  .apple, .banana, .carrot, .broccoli, .grape, .strawberry, .cucumber, .fish {
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.6);
+    animation: pulse-text-gold 1.5s infinite alternate; 
+  }
+
+  .cookie, .pizza, .donut, .burger, .fries, .soda, .hotdog, .icecream {
+    text-shadow: 0 0 5px rgba(255, 99, 71, 0.8), 0 0 10px rgba(255, 99, 71, 0.6);
+    animation: pulse-text-red 1.5s infinite alternate;
+  }
+
+  @keyframes pulse-text-gold {
+    0% {
+      text-shadow: 0 0 5px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.6);
+    }
+    100% {
+      text-shadow: 0 0 8px rgba(255, 215, 0, 1), 0 0 15px rgba(255, 215, 0, 0.8);
+    }
+  }
+  
+  @keyframes pulse-text-red {
+    0% {
+      text-shadow: 0 0 5px rgba(255, 99, 71, 0.8), 0 0 10px rgba(255, 99, 71, 0.6);
+    }
+    100% {
+      text-shadow: 0 0 8px rgba(255, 99, 71, 1), 0 0 15px rgba(255, 99, 71, 0.8);
+    }
+  }
+
+  #imtPanel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%; /* Menjamin menutupi seluruh lebar dari ujung ke ujung */
+  z-index: 1010;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+color: white;
+border-radius: 0 0 20px 20px;
+  /* Hanya garis bawah sebagai pembatas visual */
+  border-bottom: 3px solid #2e7d32;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Baloo 2', cursive;
+  pointer-events: none; /* Karakter tetap bisa gerak meski di bawah bar */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.panel-row-top {
+  background: #f1f8e9;
+  /* Padding sangat ramping */
+  padding: 4px 10px 2px 10px; 
+  border-bottom: 1px solid #c8e6c9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.label-kategori {
+  font-size: 8px; /* Ukuran teks label diperkecil lagi */
+  font-weight: 800;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#imtStatus {
+  font-size: 18px;
+  font-weight: 900;
+  color:#2e7d32;
+text-shadow:none;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.panel-row-bottom {
+  display: flex;
+  justify-content: center;
+  gap: 25px; /* Jarak antar info diperapat */
+  padding: 3px 10px; /* Padding minimalis */
+  background: transparent;
+  width: 100%;
+  border-top: 1px solid #eee;
+margin-top: 5px;
+}
+
+.info-item {
+   background: #ffffff;
+  padding: 8px 14px;
+  border-radius: 14px;
+  backdrop-filter: blur(5px);
+  color: #333;/* Ukuran skor dan timer lebih kecil */
+}
+
+.imt-legend {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  font-size: 8px; /* Ukuran teks sangat kecil agar hemat ruang */
+  color: #666;
+  margin-bottom: 2px;
+  background: rgba(255,255,255,0.5);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+/* Titik warna indikator */
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot.thin { background: #fbc02d; }
+.dot.normal { background: #2e7d32; }
+.dot.over { background: #ef6c00; }
+
+/* Sesuaikan kembali imtStatus agar tidak menabrak legend */
+#imtStatus {
+  font-size: 14px;
+  font-weight: 900;
+  margin: 0;
+  line-height: 1.1;
+}
+.emoji-icon {
+  font-size: 12px;
+  animation: mini-pulse 2s infinite ease-in-out;
+}
+
+@keyframes emoji-pulse {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.15); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.15); }
+  60% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+.emoji {
+  font-size: 20px;
+  display: inline-block; 
+}
+
+.info-item:first-child .emoji {
+  animation: emoji-pulse 2s infinite; 
+}
+#gameTimer {
+  color: #c62828; 
+}
+
+@media screen and (max-width: 480px) {
+  #imtPanel {
+    min-width: 250px;
+    top: 10px;
+  }
+  #imtStatus {
+    font-size: 20px;
+  }
+  .info-item {
+    font-size: 16px;
+  }
+}
+  
+  #gameOverOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    font-size: 26px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 1050;
+    display: none;
+    padding: 0 20px;
+    text-align: center;
+  }
+  #gameOverOverlay button {
+    margin-top: 25px;
+    font-size: 18px;
+    background: #f44336;
+    border: none;
+    padding: 10px 26px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(244, 67, 54, 0.6);
+    transition: background 0.3s ease;
+    min-width: 130px;
+  }
+  #gameOverOverlay button:hover {
+    background: #d32f2f;
+  }
+  #gameOverDetails {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  #gameOverDetails span {
+    display: block;
+    margin-top: 5px;
+  }
+  #mainMenuBtn {
+    background: #2196F3;
+    box-shadow: 0 6px 12px rgba(33, 150, 243, 0.6);
+    margin-top: 15px;
+  }
+
+  #mainMenuBtn:hover {
+    background: #1976D2;
+  }
+
+ #materiBtn {
+  background: #03a9f4;
+  box-shadow: 0 6px 12px rgba(3, 169, 244, 0.6);
+}
+#materiBtn:hover {
+  background: #0288d1;
+}
+  /* Start Screen */
+  .page {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #ebf7f2, #a9d7c8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2000;
+    text-align: center;
+    padding: 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start;
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+  #page1 {
+    background: #99DEFB;
+  }
+  #page2 {
+    background: linear-gradient(135deg, #99DEFB, #6dd5ed);
+    justify-content: center;
+  align-items: center;
+    background: #99DEFB;
+  }
+  #startScreen {
+    display: none; 
+  }
+  #startScreen h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #2e7d32;
+    text-shadow: 1px 1px 3px #bde0d9;
+  }
+  #startScreen p {
+    font-size: 1rem;
+    margin-bottom: 30px;
+    color: #3a5d40;
+    max-width: 280px;
+  }
+  #characterSelectionTitle, #difficultySelectionTitle {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #3a5d40;
+    font-weight: 600;
+  }
+  #characterSelection, .difficulty-option { 
+    margin-bottom: 20px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; 
+  }
+  .character-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  .character-container p {
+    margin: 0;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #3a5d40;
+  }
+  .character-option, .difficulty-option {
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-weight: 600;
+    color: #3a5d40;
+    background-color: rgba(255,255,255,0.7);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .character-option {
+    width: 80px;
+    height: 80px;
+    padding: 0;
+    overflow: hidden;
+  }
+  .difficulty-option {
+    font-size: 1em; 
+  }
+  .character-option.selected, .difficulty-option.selected {
+    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+  }
+  .character-option[data-character="male"].selected {
+    border-color: blue;
+    background-color: #e0f0ff;
+  }
+  .character-option[data-character="female"].selected {
+    border-color: pink;
+    background-color: #ffe0f0;
+  }
+  .character-option:hover, .difficulty-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  #startButton {
+     margin-top: 15px;
+  padding: 14px 30px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  border: none;
+  border-radius: 20px;
+
+  box-shadow: 0 8px 20px rgba(46, 204, 113, 0.5);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#startButton:hover {
+  transform: scale(1.05);
+  }
+
+  /* Info Button on Start Screen */
+  #infoButton, #nextToPage2 {
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0);
+    border: 2px solid #2e7d3200;
+    color: #2e7d3200;
+    font-size: 0.9em;
+    font-weight: 700;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  #infoButton:hover {
+    background: #e0ffe000;
+    transform: scale(1.05);
+  }
+
+  /* Info Overlay (Modal) */
+  #infoOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    padding: 20px;
+  }
+  #infoContent {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    text-align: left;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  #infoContent h2 {
+    color: #2e7d32;
+    margin-top: 0;
+    font-size: 1.8rem;
+    border-bottom: 2px solid #a9d7c8;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+  #infoContent p, #infoContent ul {
+    color: #3a5d40;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 15px;
+  }
+  #infoContent ul {
+    padding-left: 20px;
+  }
+  #infoContent ul li {
+    margin-bottom: 8px;
+  }
+  #infoCloseButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1.2em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+  }
+  #infoCloseButton:hover {
+    background: #d32f2f;
+  }
+
+
+@media screen and (max-width: 768px) {
+}
+  
+  #pou::after {
+    top: 20px; /* Posisi Y mata mobile */
+    left: 24px; /* Posisi X mata kiri mobile */
+    width: 4px;
+    height: 4px;
+    box-shadow: 16px 0 #000; /* Mata kanan mobile */
+  }
+  /* Mobile styles for female character */
+  #pou.female::before {
+    box-shadow:
+      /* --- Rambut (Desain Baru Mobile) --- */
+      12px 0 #333, 16px 0 #333, 20px 0 #333, 24px 0 #333, 28px 0 #333, 32px 0 #333, 36px 0 #333, 40px 0 #333, 44px 0 #333, 48px 0 #333,
+      8px 4px #333, 12px 4px #333, 16px 4px #333, 20px 4px #333, 24px 4px #333, 28px 4px #333, 32px 4px #333, 36px 4px #333, 40px 4px #333, 44px 4px #333, 48px 4px #333, 52px 4px #333,
+      4px 8px #333, 8px 8px #333, 12px 8px #333, 16px 8px #333, 20px 8px #333, 24px 8px #333, 28px 8px #333, 32px 8px #333, 36px 8px #333, 40px 8px #333, 44px 8px #333, 48px 8px #333, 52px 8px #333, 56px 8px #333,
+      4px 12px #333, 8px 12px #333, 12px 12px #333, 16px 12px #333, 20px 12px #333, 24px 12px #333, 28px 12px #333, 32px 12px #333, 36px 12px #333, 40px 12px #333, 44px 12px #333, 48px 12px #333, 52px 12px #333, 56px 12px #333,
+
+      /* --- Kepala (bagian kulit yang terlihat) --- */
+      12px 16px #f0c8a0, 16px 16px #f0c8a0, 20px 16px #f0c8a0, 24px 16px #f0c8a0, 28px 16px #f0c8a0, 32px 16px #f0c8a0, 36px 16px #f0c8a0, 40px 16px #f0c8a0, 44px 16px #f0c8a0, 48px 16px #f0c8a0,
+      12px 20px #f0c8a0, 16px 20px #f0c8a0, 20px 20px #f0c8a0, 24px 20px #f0c8a0, 28px 20px #f0c8a0, 32px 20px #f0c8a0, 36px 20px #f0c8a0, 40px 20px #f0c8a0, 44px 20px #f0c8a0, 48px 20px #f0c8a0,
+      12px 24px #f0c8a0, 16px 24px #f0c8a0, 20px 24px #f0c8a0, 24px 24px #f0c8a0, 28px 24px #f0c8a0, 32px 24px #f0c8a0, 36px 24px #f0c8a0, 40px 24px #f0c8a0, 44px 24px #f0c8a0, 48px 24px #f0c8a0,
+      16px 28px #f0c8a0, 20px 28px #f0c8a0, 24px 28px #f0c8a0, 28px 28px #f0c8a0, 32px 28px #f0c8a0, 36px 28px #f0c8a0, 40px 28px #f0c8a0, 44px 28px #f0c8a0,
+      20px 32px #f0c8a0, 24px 32px #f0c8a0, 28px 32px #f0c8a0, 32px 32px #f0c8a0, 36px 32px #f0c8a0, 40px 32px #f0c8a0,
+
+      /* --- Leher --- */
+      28px 36px #f0c8a0, 32px 36px #f0c8a0,
+
+      /* --- Tubuh (sekitar 12x12 piksel) --- */
+      /* Baris 1 (bahu) */
+      20px 40px #ff69b4, 24px 40px #ff69b4, 28px 40px #ff69b4, 32px 40px #ff69b4, 36px 40px #ff69b4, 40px 40px #ff69b4,
+      /* Baris 2-12 (badan) */
+      16px 44px #ff69b4, 20px 44px #ff69b4, 24px 44px #ff69b4, 28px 44px #ff69b4, 32px 44px #ff69b4, 36px 44px #ff69b4, 40px 44px #ff69b4, 44px 44px #ff69b4,
+      16px 48px #ff69b4, 20px 48px #ff69b4, 24px 48px #ff69b4, 28px 48px #ff69b4, 32px 48px #ff69b4, 36px 48px #ff69b4, 40px 48px #ff69b4, 44px 48px #ff69b4,
+      16px 52px #ff69b4, 20px 52px #ff69b4, 24px 52px #ff69b4, 28px 52px #ff69b4, 32px 52px #ff69b4, 36px 52px #ff69b4, 40px 52px #ff69b4, 44px 52px #ff69b4,
+      16px 56px #ff69b4, 20px 56px #ff69b4, 24px 56px #ff69b4, 28px 56px #ff69b4, 32px 56px #ff69b4, 36px 56px #ff69b4, 40px 56px #ff69b4, 44px 56px #ff69b4,
+      16px 60px #ff69b4, 20px 60px #ff69b4, 24px 60px #ff69b4, 28px 60px #ff69b4, 32px 60px #ff69b4, 36px 60px #ff69b4, 40px 60px #ff69b4, 44px 60px #ff69b4,
+      16px 64px #ff69b4, 20px 64px #ff69b4, 24px 64px #ff69b4, 28px 64px #ff69b4, 32px 64px #ff69b4, 36px 64px #ff69b4, 40px 64px #ff69b4, 44px 64px #ff69b4,
+      16px 68px #ff69b4, 20px 68px #ff69b4, 24px 68px #ff69b4, 28px 68px #ff69b4, 32px 68px #ff69b4, 36px 68px #ff69b4, 40px 68px #ff69b4, 44px 68px #ff69b4,
+      20px 72px #ff69b4, 24px 72px #ff69b4, 28px 72px #ff69b4, 32px 72px #ff69b4, 36px 72px #ff69b4, 40px 72px #ff69b4;
+  }
+
+
+/* Keyframes for pou shadow pulse (dapat dihapus jika tidak digunakan) */
+@keyframes pulse-shadow {
+  0%, 100% {
+    box-shadow:
+      /* Sesuaikan bayangan jika ingin tetap ada */
+      0 0 0 0 rgba(158, 92, 72, 0.6);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px rgba(158, 92, 72, 0.8);
+  }
+}
+.card-ui {
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px);
+  padding: 25px;
+  border-radius: 25px;
+  width: 90%;
+  max-width: 350px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#bmiInputs input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  background: #f5f7fa;
+  font-size: 14px;
+  outline: none;
+}
+
+#bmiInputs label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+#dailyCalorieInfo {
+  background: #e8f5e9;
+  padding: 10px;
+  border-radius: 12px;
+  width: 100%;
+  text-align: center;
+  font-weight: 600;
+}
+
+.character-option {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: 0.2s;
+}
+
+.character-option.selected {
+  transform: scale(1.05);
+  border: 2px solid #4caf50;
+}
+
+#sessionOverlay{
+position: fixed;
+inset: 0;
+
+display:none;
+
+flex-direction:column;
+
+justify-content: center;
+align-items: center;
+
+background: rgba(0,0,0,.75);
+
+z-index: 9999;
+
+text-align: center;
+
+padding: 10vw;
+
+pointer-events: none;
+}
+
+#sessionTitle{
+font-size:
+clamp(30px,6vw,64px);
+
+font-weight: 900;
+
+color: white;
+
+margin-bottom: 14px;
+}
+
+#sessionCountdown{
+font-size:
+clamp(22px,4vw,40px);
+
+color: white;
+}
+
+#sessionDesc{
+margin-top: 12px;
+
+font-size:
+clamp(16px,2vw,26px);
+
+line-height: 1.5;
+
+color:
+rgba(255,255,255,.9);
+
+max-width: 700px;
+}
+
+#sessionTitle{
+font-size:clamp(30px,6vw,64px);
+font-weight:900;
+color:white;
+}
+
+#sessionDesc{
+margin-top:12px;
+font-size:clamp(16px,2vw,26px);
+line-height:1.5;
+max-width:700px;
+color:rgba(255,255,255,.9);
+}
+
+#imtWarning {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  background: rgba(255, 0, 0, 0.85);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 12px;
+
+  font-weight: bold;
+  z-index: 5000;
+
+  opacity: 0;
+  transition: 0.3s;
+}
+
+</style>
+</head>
+<body>
+  <div id="imtWarning">⚠️ IMT sudah obesitas!</div>
+<div id="page1" class="page">
+ 
+  <video autoplay loop muted playsinline style="width: 350px; height: auto; margin-bottom: -25px;">
+    <source src="Logo.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</h1>
+
+  <p>Berikan makanan sehat kepada Nutrie dan pelajari pentingnya gizi dengan bermain. Jangan sampai IMT naik terlalu tinggi ya!</p>
+  <div style="display: flex; gap: 20px; justify-content: center;">
+    <img src="Tombol Start.png" id="nextToPage2" style="width: 200px; cursor: pointer;" alt="Start Game">
+    <img src="Tombol Panduan.png" id="infoButton" style="width: 200px; cursor: pointer;" alt="Panduan Game">
+  </div>
+</div>
+
+<div id="page2" class="page" style="display:none;">
+  <div class="card-ui">
+  <h3>Pilih Karakter:</h3>
+  <div id="characterSelection">
+    <div class="character-container">
+      <div class="character-option selected" data-character="male" aria-label="Pilih karakter pria"><img src="Male.png" alt="Male Character" style="width: 100%; height: 100%; object-fit: cover;"></div>
+      <p>Karakter Pria</p>
+    </div>
+    <div class="character-container">
+      <div class="character-option" data-character="female" aria-label="Pilih karakter wanita"><img src="Female.png" alt="Female Character" style="width: 100%; height: 100%; object-fit: cover;"></div>
+      <p>Karakter Wanita</p>
+    </div>
+  </div>
+
+  <div id="bmiInputs" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px; max-width: 250px; width: 100%;">
+    <label for="weightInput" style="font-weight: 600; color: #3a5d40; text-align: left;">Berat Badan (kg):</label>
+    <input type="number" id="weightInput" placeholder="Masukkan BB (kg)" min="1" style="padding: 8px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em;">
+
+    <label for="heightInput" style="font-weight: 600; color: #3a5d40; text-align: left;">Tinggi Badan (cm):</label>
+    <input type="number" id="heightInput" placeholder="Masukkan TB (cm)" min="1" style="padding: 8px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em;">
+
+    <label for="ageInput" style="font-weight: 600; color: #3a5d40; text-align: left;">Usia (tahun):</label>
+    <input type="number" id="ageInput" placeholder="Masukkan Usia (tahun)" min="1" style="padding: 8px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em;">
+  </div>
+
+  <div id="dailyCalorieInfo" style="margin-top: 20px; font-size: 0.9em; color: #3a5d40; text-align: left; max-width: 280px;">
+    <p>Kebutuhan Kalori Harian Anda: <span id="displayBMR">0</span> kkal</p>
+    <div style="display:none;"><span id="dailyCalorieTarget">0</span></div> 
+  </div>
+
+
+  <button id="startButton">Mulai Game</button>
+</div>
+</div> <!-- nutup card-ui -->
+</div> <!-- nutup page2 -->
+
+<!-- Info Overlay (Modal) -->
+<div id="infoOverlay" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+  <div id="infoContent">
+    <button id="infoCloseButton" aria-label="Tutup Informasi">X</button>
+    <h2 id="infoTitle">Panduan Game NutriDrop</h2>
+    <h3>Tujuan Game:</h3>
+    <ul>
+      <li>Berikan makanan sehat kepada karakter Nutrie yang bergerak di bagian bawah layar.</li>
+      <li>Hindari makanan tidak sehat agar IMT (Indeks Masa Tubuh) Nutrie tidak naik terlalu tinggi.</li>
+      <li>Capai skor kalori tertinggi dan waktu bermain terlama tanpa mencapai obesitas.</li>
+    </ul>
+    <h3>Cara Bermain:</h3>
+    <ul>
+      <li>Menggerakkan Nutrie:
+        <ul>
+          <li>Desktop: Gunakan tombol panah kiri (←) dan kanan (→) pada keyboard untuk menggerakkan Nutrie. Anda juga bisa mengklik dan menyeret Nutrie dengan mouse.</li>
+          <li>Mobile: Sentuh dan seret Nutrie di layar untuk menggerakkannya.</li>
+        </ul>
+      </li>
+      <li>Mengumpulkan Makanan:
+        <ul>
+          <li>Makanan Sehat (misal: 🍎, 🍌, 🥕): Tangkap makanan sehat untuk mengurangi total kalori Anda. Ini membantu menjaga IMT tetap stabil atau menurun.</li>
+          <li>Makanan Tidak Sehat (misal: 🍪, 🍕, 🍩):Hindari makanan tidak sehat! Jika tertangkap, kalori Anda akan bertambah dan IMT Nutrie akan meningkat.</li>
+        </ul>
+      </li>
+    </ul>
+    <h3>Skor dan Kondisi Game Over:</h3>
+    <ul>
+      <li>Kalori: Angka kalori Anda akan ditampilkan di panel IMT. Tujuan Anda adalah menjaga kalori tetap seimbang dengan kebutuhan harian Anda.</li>
+      <li>IMT (Indeks Masa Tubuh): IMT Nutrie akan berubah berdasarkan makanan yang dikonsumsi.
+        <ul>
+          <li>**Normal:** 18.5 - 24.9</li>
+          <li>**Overweight:** 25 - 29.9</li>
+          <li>**Obese:** ≥ 30 (Game Over!)</li>
+        </ul>
+      </li>
+      <li>Game berakhir jika IMT Nutrie mencapai atau melebihi 30 (Obesitas).</li>
+    </ul>
+    <h3>Tips Bermain:</h3>
+    <ul>
+      <li>Perhatikan baik-baik jenis makanan yang jatuh. Prioritaskan menangkap makanan sehat dan hindari makanan tidak sehat.</li>
+      <li>Gerakkan Nutrie dengan cepat dan tepat untuk memaksimalkan tangkapan makanan sehat.</li>
+      <li>Pantau terus status IMT Anda di panel samping. Jika mendekati batas obesitas, fokuslah pada makanan sehat!</li>
+    </ul>
+    <p>Selamat bermain dan semoga Anda belajar banyak tentang pentingnya gizi seimbang!</p>
+  </div>
+</div>
+
+<div id="page3" class="page" style="display:none;">
+<div id="gameContainer" tabindex="0" aria-label="Game area: Pou nutrition food drop">
+  <!-- Elemen Awan -->
+  <div class="cloud cloud-1"></div>
+  <div class="cloud cloud-2"></div>
+  <div class="cloud cloud-3"></div> <!-- Awan baru -->
+  <div class="cloud cloud-4"></div> <!-- Awan baru -->
+  <!-- Elemen Bintang -->
+  <div class="star star-1"></div>
+  <div class="star star-2"></div>
+  <div class="star star-3"></div>
+  <div class="star star-4"></div>
+  <div class="star star-5"></div>
+  <div class="star star-6"></div> <!-- Bintang baru -->
+  <div class="star star-7"></div> <!-- Bintang baru -->
+  <div class="star star-8"></div> <!-- Bintang baru -->
+  <div class="star star-9"></div> <!-- Bintang baru -->
+  <div class="star star-10"></div> <!-- Bintang baru -->
+
+  <!-- Elemen Tanah/Gunung (baru) -->
+  <div id="ground"></div>
+  <div id="grass"></div>
+  <div id="bushes"></div>
+  <div id="mountain-left"></div>
+  <div id="mountain-right"></div>
+
+  <div id="pou" aria-label="Pou character">
+    <!-- Mulut dihapus -->
+  </div>
+
+  <div id="sessionOverlay">
+  <div id="sessionTitle">SESI 1</div>
+  <div id="sessionCountdown">10</div>
+<div id="sessionDesc"></div>
+</div>
+
+ <div id="imtPanel">
+ <div class="panel-row-top">
+  <div class="label-kategori">KLASIFIKASI IMT</div>
+  <div class="imt-legend">
+    <div class="legend-item"><span class="dot thin"></span> < 18.5 Kurus</div>
+    <div class="legend-item"><span class="dot normal"></span> 18.5-24.9 Normal</div>
+    <div class="legend-item"><span class="dot over"></span> 25-29.9 Obesitas</div>
+  </div>
+  <div id="imtStatus">
+Progress Belajar
+</div>
+
+<div
+style="
+width:90%;
+height:14px;
+background:#d9d9d9;
+border-radius:999px;
+overflow:hidden;
+margin-top:8px;
+">
+
+<div
+id="progressFill"
+style="
+width:0%;
+height:100%;
+background:
+linear-gradient(
+90deg,
+#4caf50,
+#8bc34a
+);
+transition:.4s;
+">
+</div>
+
+</div>
+</div>
+
+  <div class="panel-row-bottom">
+
+<div class="info-item">
+🏆 Round
+<span id="roundValue">0 / 4</span>
+</div>
+
+<div class="info-item">
+⏱️
+<span id="gameTimer">15</span>
+</div>
+
+</div>
+
+  </div>
+</div>
+  
+  <div id="gameOverOverlay" role="alertdialog" aria-modal="true" aria-labelledby="gameOverTitle" aria-describedby="gameOverDesc">
+    <div id="gameOverTitle">Game Over</div>
+    <div id="gameOverDesc" style="margin-top:12px; font-weight:400; font-size:18px;">
+      Permainan selesai!
+Cek progres belajarmu
+    </div>
+    <div id="gameOverDetails">
+      <span id="finalCalorie">Kalori Anda: 0 / 0</span>
+    </div>
+    <button id="restartBtn" aria-label="Restart Game">Restart</button>
+    <button id="mainMenuBtn" aria-label="Kembali ke Menu Utama">Main Menu</button>
+    <button id="materiBtn">Materi Gizi</button>
+  </div>
+</div>
+</div>
+
+<audio id="menuMusic" loop preload="auto">
+  <source src="Menu.mp3" type="audio/mpeg">
+</audio>
+<audio id="gameMusic" loop preload="auto">
+  <source src="Game.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  
+  
+  (() => {
+    const startScreen = document.getElementById('startScreen');
+    const startButton = document.getElementById('startButton');
+    const infoButton = document.getElementById('infoButton'); // Ambil tombol info
+    const infoOverlay = document.getElementById('infoOverlay'); // Ambil overlay info
+    const infoCloseButton = document.getElementById('infoCloseButton'); // Ambil tombol tutup info
+
+    const gameContainer = document.getElementById('gameContainer');
+    const pou = document.getElementById('pou');
+    const imtStatusLabel = document.getElementById('imtStatus');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const restartBtn = document.getElementById('restartBtn');
+    const mainMenuBtn = document.getElementById('mainMenuBtn'); 
+    const materiBtn = document.getElementById('materiBtn');
+    materiBtn.addEventListener('click', () => {
+  window.open('https://linktr.ee/MateriGiziRemaja', '_blank');
+});
+    const gameTimerDisplay = document.getElementById('gameTimer'); 
+    const roundValue =
+document.getElementById('roundValue');
+    const sessionTitle =
+document.getElementById('sessionTitle');
+
+const sessionCountdown =
+
+document.getElementById('sessionCountdown');
+    const finalCalorieDisplay = document.getElementById('finalCalorie'); // Mengganti finalScoreDisplay
+
+    const characterSelection = document.getElementById('characterSelection');
+    const characterOptions = document.querySelectorAll('.character-option');
+    let selectedCharacter = 'male'; // Default character
+
+    // Input dan display BMR/Makro
+    const weightInput = document.getElementById('weightInput');
+    const heightInput = document.getElementById('heightInput');
+    const ageInput = document.getElementById('ageInput');
+    const displayBMR = document.getElementById('displayBMR');
+    const calorieValueDisplay =
+document.createElement("span");
+    const dailyCalorieTargetDisplay = document.getElementById('dailyCalorieTarget');
+
+    let containerWidth, containerHeight;
+    let pouWidth, pouHeight;
+    let pouX = 0;
+    let currentCalories = 0;
+    let currentRound = 0;// Mengganti 'score' menjadi 'currentCalories'
+    let dailyCalorieTarget = 0;
+    let BMR = 0; // Variabel untuk menyimpan BMR yang dihitung
+
+  
+    let completedRound = 0;
+let mistakes = 0;
+const MAX_MISTAKES = 4;
+    const IMT_NORMAL_MAX = 24.9;
+    const IMT_OVERWEIGHT_MAX = 29.9;
+    const IMT_OBESE_THRESHOLD = 30;
+
+        const foodItems = [
+
+    // PHBS / Aktivitas
+    {
+    className:'exercise',
+    healthy:true,
+    label:'🏃 Aktivitas Fisik',
+    emoji:'🏃'
+    },
+
+    {
+    className:'water',
+    healthy:true,
+    label:'💧 Minum Air',
+    emoji:'💧'
+    },
+
+    {
+    className:'sleep',
+    healthy:true,
+    label:'😴 Istirahat Cukup',
+    emoji:'😴'
+    },
+
+    {
+    className:'wash',
+    healthy:true,
+    label:'🧼 Cuci Tangan',
+    emoji:'🧼'
+    },
+
+    {
+    className:'clean',
+    healthy:true,
+    label:'🪥 Kebersihan Diri',
+    emoji:'🪥'
+    },
+
+
+      // Makanan Sehat (menambah kalori sehat, IMT tetap)
+      {className: 'apple', healthy: true, calorieChange: 52, imtChange: 0, label: '🍎 Apel (Sehat)', emoji: '🍎'}, // ~52 kalori per 100g
+      {className: 'banana', healthy: true, calorieChange: 89, imtChange: 0, label: '🍌 Pisang (Sehat)', emoji: '🍌'}, // ~89 kalori per 100g
+      {className: 'carrot', healthy: true, calorieChange: 41, imtChange: 0, label: '🥕 Wortel (Sehat)', emoji: '🥕'}, // ~41 kalori per 100g
+      {className: 'broccoli', healthy: true, calorieChange: 34, imtChange: 0, label: '🥦 Brokoli (Sehat)', emoji: '🥦'}, // ~34 kalori per 100g
+      {className: 'grape', healthy: true, calorieChange: 69, imtChange: 0, label: '🍇 Anggur (Sehat)', emoji: '🍇'}, // ~69 kalori per 100g
+      {className: 'strawberry', healthy: true, calorieChange: 32, imtChange: 0, label: '🍓 Stroberi (Sehat)', emoji: '🍓'}, // ~32 kalori per 100g
+      {className: 'cucumber', healthy: true, calorieChange: 16, imtChange: 0, label: '🥒 Mentimun (Sehat)', emoji: '🥒'}, // ~16 kalori per 100g
+      {className: 'fish', healthy: true, calorieChange: 206, imtChange: 0, label: '🐟 Ikan (Sehat)', emoji: '🐟'}, // ~206 kalori per 100g (salmon)
+
+      // Makanan Tidak Sehat (menambah kalori tinggi, menambah IMT)
+      {className: 'cookie', healthy: false, calorieChange: 130, imtChange: 1, label: '🍪 Kue (Tidak Sehat)', emoji: '🍪'},
+      {className: 'pizza', healthy: false, calorieChange: 210, imtChange: 2, label: '🍕 Pizza (Tidak Sehat)', emoji: '🍕'},
+      {className: 'donut', healthy: false, calorieChange: 250, imtChange: 2, label: '🍩 Donat (Tidak Sehat)', emoji: '🍩'},
+      {className: 'burger', healthy: false, calorieChange: 250, imtChange: 2, label: '🍔 Burger (Tidak Sehat)', emoji: '🍔'},
+      {className: 'fries', healthy: false, calorieChange: 275, imtChange: 2, label: '🍟 Kentang Goreng (Tidak Sehat)', emoji: '🍟'},
+      {className: 'soda', healthy: false, calorieChange: 140, imtChange: 1, label: '🥤 Soda (Tidak Sehat)', emoji: '🥤'},
+      {className: 'hotdog', healthy: false, calorieChange: 240, imtChange: 2, label: '🌭 Hot Dog (Tidak Sehat)', emoji: '🌭'},
+      {className: 'icecream', healthy: false, calorieChange: 100, imtChange: 1, label: '🍦 Es Krim (Tidak Sehat)', emoji: '🍦'},
+    ];
+    
+    // Definisi tingkat kesulitan (tetap ada untuk referensi, tapi tidak digunakan untuk pemilihan)
+    const difficultySettings = {
+      easy: {
+        fallingSpeed: 2.5,
+        dropInterval: 1500,
+        speedIncreaseFactor: 1.5, // Peningkatan kecepatan setelah 30 detik
+        dropIntervalDecreaseFactor: 0.7 // Penurunan interval setelah 30 detik
+      },
+      medium: {
+        fallingSpeed: 3.5,
+        dropInterval: 1200,
+        speedIncreaseFactor: 1.6,
+        dropIntervalDecreaseFactor: 0.6
+      },
+      hard: {
+        fallingSpeed: 4.5,
+        dropInterval: 900,
+        speedIncreaseFactor: 1.7,
+        dropIntervalDecreaseFactor: 0.5
+      },
+      expert: {
+        fallingSpeed: 5.5,
+        dropInterval: 700,
+        speedIncreaseFactor: 1.8,
+        dropIntervalDecreaseFactor: 0.4
+      },
+      robot: { // Tingkat kesulitan ekstrem
+        fallingSpeed: 7.0,
+        dropInterval: 500,
+        speedIncreaseFactor: 2.0,
+        dropIntervalDecreaseFactor: 0.3
+      }
+    };
+
+    // Atur nilai default ke "easy"
+    let currentFallingSpeedBase = difficultySettings.easy.fallingSpeed; 
+    let currentDropIntervalMs = 1200;
+    let currentSpeedIncreaseFactor = difficultySettings.easy.speedIncreaseFactor;
+    let currentDropIntervalDecreaseFactor = difficultySettings.easy.dropIntervalDecreaseFactor;
+
+    let activeFoods = [];
+    let gameRunning = false;
+    let warningShown = false;
+    let animationFrameId = null;
+    let gameStartTime = 0; 
+    let speedIncreased = false; 
+    let elapsedTime = 0; 
+  
+const BREAK_DURATION = 5000;
+const SESSION_DURATION = 15000;
+const sessionDesc =
+document.getElementById('sessionDesc');
+
+let isBreak=false;
+let roundTimeout=null;
+
+
+const sessions=[
+
+{
+title:"SESI 1",
+desc:"Kenali Gizi Seimbang",
+
+foods:[
+
+"apple",
+"banana",
+"carrot",
+"broccoli",
+"fish",
+
+"water",
+"exercise"
+
+]
+
+},
+
+{
+title:"SESI 2",
+desc:"Biasakan PHBS",
+
+foods:[
+
+// PHBS (yang BENAR)
+"water",
+"wash",
+"exercise",
+"sleep",
+
+// JEBAKAN (bukan PHBS)
+"burger",
+"pizza",
+"fries",
+"soda",
+"cookie",
+"hotdog",
+"icecream"
+
+]
+
+
+},
+
+{
+title:"SESI 3",
+desc:"Pilih Makanan Bergizi",
+
+foods:[
+
+"apple",
+"banana",
+"carrot",
+"broccoli",
+"grape",
+"strawberry",
+"fish",
+
+"pizza",
+"burger"
+
+]
+
+},
+
+{
+title:"SESI 4",
+desc:"Terapkan Semua",
+
+foods:null
+
+}
+
+];
+
+const TOTAL_STAGE =
+(BREAK_DURATION+SESSION_DURATION)*4;
+
+const GAME_DURATION =
+TOTAL_STAGE;
+
+
+    let remainingTime = GAME_DURATION; // Waktu tersisa untuk countdown
+
+  
+
+    function initializeSizes() {
+  containerWidth = gameContainer.clientWidth;
+  containerHeight = gameContainer.clientHeight;
+
+  pouWidth = pou.offsetWidth;
+  pouHeight = pou.offsetHeight;
+
+  pouX = containerWidth / 2 - pouWidth / 2;
+  pou.style.left = pouX + 'px';
+  pou.style.bottom = (containerHeight * 0.14) + 'px';
+}
+
+    function clamp(val, min, max) {
+      return Math.min(Math.max(val, min), max);
+    }
+
+   function createFood(){
+
+if(!gameRunning) return;
+
+// ambil sesi aktif
+const activeSession =
+sessions[
+Math.max(
+0,
+currentRound-1
+)
+];
+
+// filter icon sesuai sesi
+let availableFoods =
+foodItems;
+
+if(
+activeSession &&
+activeSession.foods
+){
+
+availableFoods =
+foodItems.filter(
+food=>
+activeSession.foods.includes(
+food.className
+)
+);
+
+}
+
+// fallback kalau kosong
+if(
+availableFoods.length===0
+){
+availableFoods=
+foodItems;
+}
+
+let weightedFoods = [...availableFoods];
+
+
+
+let healthyFoods =
+weightedFoods.filter(
+food => food.healthy
+);
+
+let unhealthyFoods =
+weightedFoods.filter(
+food => !food.healthy
+);
+
+// 60% benar
+// 40% perancu
+let pool;
+
+// sesi 1 lebih banyak sehat
+if(currentRound === 1){
+
+pool =
+Math.random() < 0.7
+? healthyFoods
+: unhealthyFoods.length > 0
+? unhealthyFoods
+: healthyFoods;
+
+}
+
+// sesi 2 PHBS lebih banyak jebakan
+else if(currentRound === 2){
+
+pool =
+Math.random() < 0.4
+? healthyFoods
+: unhealthyFoods;
+
+}
+
+// sesi 3 seimbang
+else if(currentRound === 3){
+
+pool =
+Math.random() < 0.5
+? healthyFoods
+: unhealthyFoods;
+
+}
+
+// sesi 4 chaos
+else{
+
+pool =
+Math.random() < 0.45
+? healthyFoods
+: unhealthyFoods;
+
+}
+
+// fallback aman
+if(!pool || pool.length === 0){
+pool = weightedFoods;
+}
+
+const foodData =
+pool[
+Math.floor(
+Math.random() *
+pool.length
+)
+];
+
+
+const food =
+document.createElement(
+'div'
+);
+
+food.classList.add(
+'foodItem',
+foodData.className
+);
+
+food.textContent =
+foodData.emoji;
+
+const foodSize =
+containerHeight*0.05;
+
+const x =
+Math.random()*
+(
+containerWidth-
+foodSize
+);
+
+food.style.left =
+x+"px";
+
+food.style.top =
+-foodSize+"px";
+
+gameContainer.appendChild(
+food
+);
+
+activeFoods.push({
+
+element:
+food,
+
+x:
+x,
+
+y:
+-foodSize,
+
+data:
+foodData,
+
+speed:
+currentFallingSpeedBase+
+Math.random()
+
+});
+
+}
+    function updateFoods() {
+      if (!gameRunning) return;
+     const pouRect = {
+left: pouX,
+right: pouX + pouWidth,
+top:
+containerHeight -
+(containerHeight * 0.14) -
+pouHeight,
+
+bottom:
+containerHeight -
+(containerHeight * 0.14)
+};// Posisi Y bagian atas Pou
+
+      for (let i = activeFoods.length -1; i >= 0; i--) {
+        const f = activeFoods[i];
+        f.y += f.speed;
+        f.element.style.top = f.y + 'px';
+
+        // Cek tabrakan dengan Pou
+        // Makanan dianggap bertabrakan jika bagian bawah makanan mencapai atau melewati bagian atas Pou
+        // DAN posisi horizontalnya tumpang tindih dengan Pou
+        const foodSize = containerHeight * 0.05;
+
+const foodRect = {
+left: f.x,
+right: f.x + foodSize,
+top: f.y,
+bottom: f.y + foodSize
+};
+
+if (
+  foodRect.right > pouRect.left &&
+  foodRect.left < pouRect.right &&
+  foodRect.bottom > pouRect.top &&
+  foodRect.top < pouRect.bottom
+) {
+
+  eatFood(f.data);
+  removeFood(i);
+  continue;
+
+}
+else if (f.y > containerHeight) {
+
+  removeFood(i);
+  continue;
+
+}
+  
+      }
+    }
+
+    function removeFood(index) {
+      const foodObj = activeFoods[index];
+      if(foodObj.element.parentNode) {
+        foodObj.element.parentNode.removeChild(foodObj.element);
+      }
+      activeFoods.splice(index, 1);
+    }
+function eatFood(foodData){
+
+if(!gameRunning) return;
+
+// kalau sehat = tambah progress
+if(foodData.healthy){
+
+console.log("Healthy");
+
+return;
+
+}
+
+// kalau tidak sehat = tambah mistake
+mistakes++;
+
+console.log(
+"Mistake:",
+mistakes
+);
+
+// update visual kalau mau
+updateProgress();
+
+if(mistakes >= MAX_MISTAKES){
+
+mistakes = MAX_MISTAKES;
+
+// tandai round gagal
+isBreak = true;
+
+// tampilkan overlay gagal kecil
+const overlay =
+document.getElementById(
+"sessionOverlay"
+);
+
+sessionTitle.textContent =
+"ROUND GAGAL";
+
+sessionDesc.textContent =
+"Too many wrong items!";
+
+sessionCountdown.textContent =
+"❌";
+
+overlay.style.display =
+"flex";
+
+// lanjut round berikut setelah sebentar
+setTimeout(()=>{
+
+overlay.style.display =
+"none";
+
+// reset mistake
+mistakes = 0;
+
+// pindah round
+currentRound++;
+
+if(currentRound > 4){
+
+endGame("finish");
+return;
+
+}
+
+updateSessionUI();
+
+},1200);
+
+}
+
+}
+
+
+
+   function movePou(x) {
+  const minX = 0;
+  const maxX = gameContainer.clientWidth - pou.offsetWidth;
+
+  pouX = clamp(x, minX, maxX);
+  pou.style.left = pouX + 'px';
+}
+
+    let keysPressed = {};
+    let keyboardEnabled = false;
+    function keyDownHandler(e) {
+      if (!keyboardEnabled) return;
+      keysPressed[e.key] = true;
+    }
+    function keyUpHandler(e) {
+      if (!keyboardEnabled) return;
+      keysPressed[e.key] = false;
+    }
+    function handleKeyboardMove() {
+      if (!keyboardEnabled) return;
+      const moveSpeed = 7;
+      if (keysPressed['ArrowLeft'] || keysPressed['Left']) {
+        movePou(pouX - moveSpeed);
+      }
+      if (keysPressed['ArrowRight'] || keysPressed['Right']) {
+        movePou(pouX + moveSpeed);
+      }
+    }
+
+    let dragging = false;
+    function pointerDown(e) {
+      e.preventDefault();
+      let pointerX = e.clientX ?? e.touches?.[0]?.clientX;
+      if (!pointerX) return;
+      const pouRect = pou.getBoundingClientRect();
+      if (pointerX >= pouRect.left && pointerX <= pouRect.right) {
+        dragging = true;
+        pou.style.cursor = "grabbing";
+      }
+    }
+      function pointerMove(e) {
+      if (!dragging) return;
+      e.preventDefault();
+      const rect = gameContainer.getBoundingClientRect();
+      let pointerX = e.clientX ?? e.touches?.[0]?.clientX;
+      if (!pointerX) return;
+      let newX = pointerX - rect.left - pouWidth / 2;
+      movePou(newX);
+    }
+    function pointerUp(e) {
+      dragging = false;
+      pou.style.cursor = "grab";
+    }
+
+    let lastDropTime = 0;
+
+    function formatTime(ms) {
+      const seconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return String(minutes).padStart(2, '0') + ':' + String(remainingSeconds).padStart(2, '0');
+    }
+
+function updateTimerDisplay(){
+
+const countdown =
+Math.max(
+0,
+Math.floor(
+remainingTime/1000
+)
+);
+
+gameTimerDisplay.textContent =
+String(countdown);
+
+}
+
+function gameLoop(time=0){
+
+if(!gameRunning) return;
+
+if(lastDropTime===0){
+lastDropTime=
+time-500;
+}
+
+elapsedTime =
+time-gameStartTime;
+
+remainingTime =
+GAME_DURATION-
+elapsedTime;
+
+const ROUND_TOTAL =
+BREAK_DURATION +
+SESSION_DURATION;
+
+const targetRound =
+Math.min(
+4,
+Math.floor(
+elapsedTime /
+ROUND_TOTAL
+)+1
+);
+
+if(
+targetRound !== currentRound
+){
+
+// kalau round selesai tanpa gagal
+
+currentRound =
+targetRound;
+
+mistakes = 0;
+
+updateSessionUI();
+
+}
+
+if(
+elapsedTime>=
+GAME_DURATION
+){
+
+completedRound =
+Math.min(
+completedRound,
+4
+);
+
+updateProgress();
+
+endGame(
+"finish"
+);
+
+return;
+
+}
+
+
+
+updateTimerDisplay();
+
+sessionCountdown.textContent =
+Math.max(
+0,
+15-
+Math.floor(
+(
+
+(
+elapsedTime %
+ROUND_TOTAL
+) - BREAK_DURATION
+)
+
+/1000
+)
+);
+
+let deltaDrop =
+time-lastDropTime;
+
+if(
+!isBreak &&
+deltaDrop>=
+currentDropIntervalMs
+){
+createFood();
+lastDropTime=time;
+}
+
+handleKeyboardMove();
+
+if(!isBreak){
+updateFoods();
+}
+
+animationFrameId =
+requestAnimationFrame(
+gameLoop
+);
+}
+    // Fungsi untuk mereset semua state game ke kondisi awal (sebelum game dimulai)
+    function resetGameStates() {
+      mistakes=0;
+
+currentRound=0;
+
+completedRound=0;
+
+gameRunning=false;
+
+clearTimeout(
+window.overlayTimeout
+);
+      activeFoods.forEach(f => {
+        if (f.element.parentNode) f.element.parentNode.removeChild(f.element);
+      });
+      activeFoods.length = 0;
+      currentCalories = 0; // Reset kalori
+      completedRound = 0;
+
+      updateProgress();
+      speedIncreased = false; // Pastikan game tidak berjalan
+      if(animationFrameId) cancelAnimationFrame(animationFrameId); // Hentikan animasi jika ada
+      lastDropTime = 0;
+      gameStartTime = 0; 
+      elapsedTime = 0; 
+      remainingTime = GAME_DURATION; // Reset countdown ke 30 detik
+      updateTimerDisplay(); 
+      calorieValueDisplay.textContent = currentCalories.toFixed(0) + ' / ' + dailyCalorieTarget.toFixed(0); // Update display
+      pou.style.left = (containerWidth / 2 - pouWidth / 2) + 'px';
+      pouX = containerWidth / 2 - pouWidth / 2;
+    }
+
+    restartBtn.addEventListener('click', startGame);
+
+    function goToMainMenu() {
+      switchMusic('menu');
+      gameOverOverlay.style.display = 'none'; // Sembunyikan overlay game over
+      page3.style.display = 'none'; // Sembunyikan page3
+      resetGameStates(); // Reset semua state game
+      page1.style.display = 'flex'; // Tampilkan page1
+      page1.focus?.(); // Fokuskan ke page1
+      calculateBMRAndMacros(); // Hitung ulang BMR saat kembali ke menu utama
+    }
+    mainMenuBtn.addEventListener('click', goToMainMenu); // Tambahkan event listener untuk tombol Main Menu
+
+    // Info Button Logic
+    infoButton.addEventListener('click', () => {
+      infoOverlay.style.display = 'flex'; // Tampilkan overlay info
+    });
+
+    infoCloseButton.addEventListener('click', () => {
+      infoOverlay.style.display = 'none'; // Sembunyikan overlay info
+    });
+
+    // Fungsi untuk menghitung BMR dan makronutrien
+    function calculateBMRAndMacros() {
+      const weight = parseFloat(weightInput.value);
+      const height = parseFloat(heightInput.value);
+      const age = parseFloat(ageInput.value);
+
+      // Periksa apakah input valid, jika tidak, set display ke 0 atau placeholder
+      if (isNaN(weight) || isNaN(height) || isNaN(age) || weight <= 0 || height <= 0 || age <= 0) {
+        displayBMR.textContent = '0'; // Set ke 0 jika input tidak valid
+        dailyCalorieTarget = 0;
+        dailyCalorieTargetDisplay.textContent = '0';
+        calorieValueDisplay.textContent = '0 / 0'; // Pastikan display kalori juga direset
+        return;
+      }
+
+      let calculatedBMR;
+      // Hitung IMT untuk menentukan rumus BMR wanita
+      const currentIMT = weight / ((height / 100) * (height / 100));
+
+      if (selectedCharacter === 'male') {
+        // Pria: BMR = (10 × berat badan dalam kg) + (6.25 × tinggi badan dalam cm) - (5 × usia dalam tahun) + 5
+        calculatedBMR = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+      } else { // female
+        if (currentIMT >= 18.5 && currentIMT <= 24.9) { // Berat badan normal
+          // Wanita (normal): BMR = (10 × berat badan dalam kg) + (6.25 × tinggi badan dalam cm) - (5 × usia dalam tahun) - 161
+          calculatedBMR = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+        } else { // Berat badan lebih (overweight/obese)
+          // Wanita (lebih): BMR = 655,1 + (9,563 x berat badan dalam kilogram) + (1,850 x tinggi badan dalam cm) – (4,676 x usia)
+          calculatedBMR = 655.1 + (9.563 * weight) + (1.850 * height) - (4.676 * age);
+        }
+      }
+      
+      BMR = calculatedBMR; // Simpan BMR yang dihitung
+      dailyCalorieTarget = Math.round(BMR * 1.2); // Asumsi aktivitas ringan (faktor 1.2)
+                                                  // Anda bisa menambahkan pilihan tingkat aktivitas jika diinginkan
+
+      displayBMR.textContent = dailyCalorieTarget.toFixed(0);
+      dailyCalorieTargetDisplay.textContent = dailyCalorieTarget.toFixed(0);
+      calorieValueDisplay.textContent = currentCalories.toFixed(0) + ' / ' + dailyCalorieTarget.toFixed(0); // Update display kalori di panel IMT
+    }
+    function endGame(reason="lose"){
+
+gameRunning=false;
+
+cancelAnimationFrame(
+animationFrameId
+);
+
+activeFoods.forEach(
+f=>f.element.remove()
+);
+
+activeFoods=[];
+
+finalCalorieDisplay.textContent=
+"Progress: "+
+Math.round(
+(completedRound/4)*100
+)+"%";
+
+savePlayerData(
+Math.round(
+(completedRound/4)*100
+)
+);
+
+gameOverOverlay.style.display=
+"flex";
+
+switchMusic(
+"menu"
+);
+
+
+
+}
+function updateProgress(){
+
+let percent =
+(
+completedRound/
+4
+)*100;
+
+document
+.getElementById(
+"progressFill"
+)
+.style.width =
+percent+"%";
+
+}
+function updateSessionUI(){
+
+completedRound =
+Math.max(
+completedRound,
+currentRound-1
+);
+
+updateProgress();
+
+// hitung round aktif
+const session =
+currentRound - 1;
+
+// RESET SEMUA STATE ROUND BARU
+
+
+// buang makanan sisa round sebelumnya
+activeFoods.forEach(f=>{
+if(f.element?.parentNode){
+f.element.remove();
+}
+});
+
+activeFoods=[];
+
+// HOLD makanan saat overlay tampil
+isBreak = true;
+
+// reset timing
+lastDropTime =
+performance.now();
+
+// jangan spawn dulu
+clearTimeout(roundTimeout);
+
+roundTimeout = setTimeout(()=>{
+
+if(!gameRunning) return;
+
+isBreak = false;
+
+lastDropTime =
+performance.now();
+
+},BREAK_DURATION);
+
+roundValue.textContent =
+currentRound + " / 4";
+
+sessionTitle.textContent =
+sessions[session].title;
+
+sessionDesc.textContent =
+sessions[session].desc;
+
+sessionCountdown.textContent =
+15;
+
+// overlay
+const overlay =
+document.getElementById(
+"sessionOverlay"
+);
+
+overlay.style.display =
+"flex";
+
+overlay.style.opacity =
+0;
+
+requestAnimationFrame(()=>{
+overlay.style.transition=
+"opacity .4s ease";
+overlay.style.opacity=1;
+});
+
+clearTimeout(
+window.overlayTimeout
+);
+
+clearTimeout(window.overlayTimeout);
+
+window.overlayTimeout=
+setTimeout(()=>{
+
+overlay.style.opacity=0;
+
+setTimeout(()=>{
+
+overlay.style.display="none";
+
+},400);
+
+},BREAK_DURATION - 400);
+
+}
+    function startGame() {
+      warningShown = false;
+      page2.style.display = 'none';
+      page3.style.display = 'flex';
+      initializeSizes();
+      resetGameStates();
+
+      gameRunning = true;
+      gameStartTime = performance.now();
+  
+
+gameStartTime =
+performance.now();
+
+
+speedIncreased=false;
+
+isBreak=true;
+
+elapsedTime=0;
+
+remainingTime=
+GAME_DURATION;
+
+lastDropTime=
+performance.now()-500;
+currentRound = 1;
+
+updateSessionUI();
+
+updateProgress();
+      remainingTime = GAME_DURATION; // Set countdown ke 30 detik
+      updateTimerDisplay();
+      calorieValueDisplay.textContent="";
+
+      // Apply selected character class
+      pou.classList.remove('male', 'female');
+      pou.classList.add(selectedCharacter);
+gameOverOverlay.style.display=
+"none";
+
+switchMusic(
+"game"
+);
+      animationFrameId = requestAnimationFrame(gameLoop);
+    }
+    startButton.addEventListener('click', startGame);
+
+    // Character selection logic
+    characterOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        characterOptions.forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+        selectedCharacter = option.dataset.character;
+        calculateBMRAndMacros(); // Panggil ulang saat karakter berubah
+      });
+    });
+
+    // Event listeners untuk input BMR/Makro
+    weightInput.addEventListener('input', calculateBMRAndMacros);
+    heightInput.addEventListener('input', calculateBMRAndMacros);
+    ageInput.addEventListener('input', calculateBMRAndMacros);
+
+    window.addEventListener('resize', () => {
+      initializeSizes();
+      if(gameRunning) {
+        movePou(pouX);
+      }
+    });
+
+    if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) === false) {
+      keyboardEnabled = true;
+      window.addEventListener('keydown', keyDownHandler);
+      window.addEventListener('keyup', keyUpHandler);
+    }
+
+    gameContainer.addEventListener('mousedown', pointerDown);
+    gameContainer.addEventListener('touchstart', pointerDown, {passive:false});
+    window.addEventListener('mousemove', pointerMove);
+    window.addEventListener('touchmove', pointerMove, {passive:false});
+    window.addEventListener('mouseup', pointerUp);
+    window.addEventListener('touchend', pointerUp);
+
+    // Panggil fungsi ini sekali saat halaman dimuat untuk menampilkan nilai default
+    // Namun, karena kita ingin placeholder, kita tidak perlu memanggilnya dengan nilai default
+    // Cukup pastikan display BMR awal adalah 0
+    displayBMR.textContent = '0';
+    dailyCalorieTargetDisplay.textContent = '0';
+    calorieValueDisplay.textContent = '0 / 0';
+
+
+
+    // Page navigation
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+    const page3 = document.getElementById('page3');
+    const nextToPage2 = document.getElementById('nextToPage2');
+
+    nextToPage2.addEventListener('click', () => {
+      page1.style.display = 'none';
+      page2.style.display = 'flex';
+    });
+
+    // Show page1 initially
+    page1.style.display = 'flex';
+
+    setTimeout(() => {
+  page1.focus?.();
+}, 300);
+
+
+async function savePlayerData(progress){
+
+try{
+
+await fetch(
+"https://YOUR-VERCEL-API.vercel.app/api/save",
+{
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+time:new Date()
+.toLocaleString(),
+
+progress:progress
+
+})
+
+}
+);
+
+}catch(err){
+
+console.log(
+"Gagal simpan:",
+err
+);
+
+}
+
+}
+
+})();
+  // --- LOGIKA MUSIK AMAN ---
+const menuMusic = document.getElementById('menuMusic');
+const gameMusic = document.getElementById('gameMusic');
+let musicInitialized = false;
+
+function switchMusic(mode) {
+    if (mode === 'game') {
+        menuMusic.pause();
+        menuMusic.currentTime = 0;
+        gameMusic.play().catch(() => {});
+    } else {
+        gameMusic.pause();
+        gameMusic.currentTime = 0;
+        menuMusic.play().catch(() => {});
+    }
+}
+
+// Aktifkan musik menu pada klik pertama di halaman manapun
+document.addEventListener('click', () => {
+    if (!musicInitialized) {
+        switchMusic('menu');
+        musicInitialized = true;
+    }
+}, { once: true });
+
+document.addEventListener('click', () => {
+ if(!musicInitialized){
+   switchMusic('menu');
+   musicInitialized=true;
+ }
+},{once:true});
+
+
+// Tambahkan ke fungsi endGame yang ada agar musik kembali ke menu
+// Kita bungkus fungsi aslinya
+</script>
+</body>
+</html>
+ 
